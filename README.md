@@ -1,26 +1,23 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
-
 # Gamification Web
 
-Ứng dụng web để:
+Ung dung web de:
 
-- Tạo và quản lý nhiều game gamification trong thư viện
-- Cho học viên nhập tên, vào game, trả lời câu hỏi trong thời gian giới hạn
-- Lưu người chơi, phiên chơi, câu trả lời và phân tích AI vào Supabase
-- Gọi Gemini để phân tích từng bài làm và tổng hợp ý kiến theo game
-- Export dữ liệu phản hồi sang CSV/XLSX
+- Tao va quan ly nhieu game gamification trong thu vien
+- Cho hoc vien nhap ten, vao game, tra loi cau hoi trong thoi gian gioi han
+- Luu nguoi choi, phien choi, cau tra loi va phan tich AI vao Supabase
+- Goi Gemini de phan tich tung bai lam va tong hop y kien theo game
+- Export du lieu phan hoi sang CSV/XLSX
 
-## Chạy local
+## Chay local
 
-1. Cài dependency:
+1. Cai dependency:
    `npm install`
-2. Tạo file `.env.local` từ `.env.example`
-3. Điền `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_GEMINI_API_KEY`
-4. Chạy app:
+2. Tao file `.env.local` tu `.env.example`
+3. Dien `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_GEMINI_API_KEY`
+4. Chay app:
    `npm run dev`
 
 ## Supabase
 
-Chạy SQL trong file [supabase/schema.sql](/E:/tool/github/Gamification1-main/supabase/schema.sql) để tạo các bảng cần thiết.
+1. Chay SQL trong file [supabase/schema.sql](/E:/tool/github/Gamification1-main/supabase/schema.sql) de tao cac bang can thiet.
+2. Chay tiep file [supabase/seed.sql](/E:/tool/github/Gamification1-main/supabase/seed.sql) de nap san Gamification 01, 02 va 03.

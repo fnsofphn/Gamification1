@@ -1,6 +1,15 @@
 import { useMemo, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Download, FileText, User, CheckCircle2, XCircle, Sparkles, BarChart3 } from 'lucide-react';
+import {
+  ArrowLeft,
+  Download,
+  FileText,
+  User,
+  CheckCircle2,
+  XCircle,
+  Sparkles,
+  BarChart3,
+} from 'lucide-react';
 import { gamesService } from '../services/games.service';
 import { submissionsService } from '../services/submissions.service';
 import { exportService } from '../services/export.service';
@@ -18,6 +27,7 @@ export default function GameResults() {
   const [game, setGame] = useState<any>(null);
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [analysis, setAnalysis] = useState<any>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [analysisLoading, setAnalysisLoading] = useState(false);
 
@@ -65,8 +75,16 @@ export default function GameResults() {
     if (!game || submissions.length === 0) return;
 
     setAnalysisLoading(true);
+    setAnalysisError(null);
 
     try {
+      if (!analysisService.isConfigured()) {
+        const message = analysisService.getConfigurationMessage();
+        setAnalysisError(message);
+        alert(message);
+        return;
+      }
+
       const payload = submissions.flatMap((submission) =>
         (submission.game_answers || []).map((answer: any) => ({
           question: answer.game_questions?.question_text || `Câu hỏi ${answer.question_id}`,
@@ -78,14 +96,20 @@ export default function GameResults() {
       setAnalysis(result);
     } catch (error) {
       console.error(error);
-      alert('Không thể phân tích dữ liệu bằng Gemini.');
+      const message = error instanceof Error ? error.message : 'Không thể phân tích dữ liệu bằng Gemini.';
+      setAnalysisError(message);
+      alert(message);
     } finally {
       setAnalysisLoading(false);
     }
   };
 
   if (loading) {
-    return <div className="min-h-[80vh] flex items-center justify-center text-blue-600 font-bold text-xl">Đang tải kết quả...</div>;
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center text-blue-600 font-bold text-xl">
+        Đang tải kết quả...
+      </div>
+    );
   }
 
   if (!game) return null;
@@ -94,26 +118,41 @@ export default function GameResults() {
     <div className="max-w-7xl mx-auto p-4 md:p-8 animate-fade-in-up">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div>
-          <Link to={`/games/${slug}`} className="inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-800 mb-4 transition-colors">
+          <Link
+            to={`/games/${slug}`}
+            className="inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-800 mb-4 transition-colors"
+          >
             <ArrowLeft className="mr-2 w-4 h-4" />
             Quay lại chi tiết game
           </Link>
-          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-800 drop-shadow-sm">Kết quả ý kiến</h1>
+          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-800 drop-shadow-sm">
+            Kết quả ý kiến
+          </h1>
           <p className="text-lg text-slate-600 mt-3 font-medium">
             Game: <span className="text-blue-700">{game.title}</span>
           </p>
         </div>
 
         <div className="flex flex-wrap gap-4">
-          <button onClick={handleRunAnalysis} disabled={analysisLoading || submissions.length === 0} className="btn-3d-blue px-6 py-3.5 text-base disabled:opacity-60">
+          <button
+            onClick={handleRunAnalysis}
+            disabled={analysisLoading || submissions.length === 0}
+            className="btn-3d-blue px-6 py-3.5 text-base disabled:opacity-60"
+          >
             <Sparkles className="w-5 h-5 mr-2" />
             {analysisLoading ? 'Đang phân tích...' : 'Phân tích bằng Gemini'}
           </button>
-          <button onClick={() => exportService.exportSubmissionsToCSV(game.id, game.slug)} className="btn-3d-blue px-6 py-3.5 text-base">
+          <button
+            onClick={() => exportService.exportSubmissionsToCSV(game.id, game.slug)}
+            className="btn-3d-blue px-6 py-3.5 text-base"
+          >
             <Download className="w-5 h-5 mr-2" />
             CSV
           </button>
-          <button onClick={() => exportService.exportSubmissionsToExcel(game.id, game.slug)} className="btn-3d-orange px-6 py-3.5 text-base">
+          <button
+            onClick={() => exportService.exportSubmissionsToExcel(game.id, game.slug)}
+            className="btn-3d-orange px-6 py-3.5 text-base"
+          >
             <Download className="w-5 h-5 mr-2" />
             Excel
           </button>
@@ -135,7 +174,10 @@ export default function GameResults() {
                   <h3 className="text-lg font-bold text-slate-800 mb-4">{item.question}</h3>
                   <div className="space-y-3">
                     {item.answers.map((answer, index) => (
-                      <div key={`${item.question}-${index}`} className="rounded-xl bg-white border border-slate-200 px-4 py-3 text-slate-700 font-medium whitespace-pre-wrap">
+                      <div
+                        key={`${item.question}-${index}`}
+                        className="rounded-xl bg-white border border-slate-200 px-4 py-3 text-slate-700 font-medium whitespace-pre-wrap"
+                      >
                         {answer}
                       </div>
                     ))}
@@ -149,9 +191,15 @@ export default function GameResults() {
         <div className="space-y-8">
           <div className="card-3d p-8">
             <h2 className="text-2xl font-extrabold text-slate-800 mb-5">Phân tích AI</h2>
+            {analysisError && (
+              <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                {analysisError}
+              </div>
+            )}
             {!analysis ? (
               <p className="text-slate-600 font-medium leading-relaxed">
-                Chưa có bản phân tích nào. Nhấn nút <strong>Phân tích bằng Gemini</strong> để tạo bản tổng hợp từ toàn bộ ý kiến của học viên.
+                Chưa có bản phân tích nào. Nhấn nút <strong>Phân tích bằng Gemini</strong> để tạo bản
+                tổng hợp từ toàn bộ ý kiến của học viên.
               </p>
             ) : (
               <div className="space-y-5">
@@ -159,7 +207,10 @@ export default function GameResults() {
                 {analysis.keywords?.length > 0 && (
                   <div className="flex flex-wrap gap-2">
                     {analysis.keywords.map((keyword: string) => (
-                      <span key={keyword} className="rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-sm font-semibold text-blue-700">
+                      <span
+                        key={keyword}
+                        className="rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-sm font-semibold text-blue-700"
+                      >
                         {keyword}
                       </span>
                     ))}
@@ -168,7 +219,10 @@ export default function GameResults() {
                 {analysis.recommendations?.length > 0 && (
                   <div className="space-y-2">
                     {analysis.recommendations.map((recommendation: string) => (
-                      <div key={recommendation} className="rounded-xl bg-orange-50 border border-orange-100 px-4 py-3 text-sm font-medium text-slate-700">
+                      <div
+                        key={recommendation}
+                        className="rounded-xl bg-orange-50 border border-orange-100 px-4 py-3 text-sm font-medium text-slate-700"
+                      >
                         {recommendation}
                       </div>
                     ))}
@@ -192,7 +246,9 @@ export default function GameResults() {
           <div className="card-3d p-12 text-center">
             <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-slate-800">Chưa có ý kiến nào</h3>
-            <p className="text-slate-500 mt-2 font-medium">Hãy mời học viên tham gia game để thu thập dữ liệu.</p>
+            <p className="text-slate-500 mt-2 font-medium">
+              Hãy mời học viên tham gia game để thu thập dữ liệu.
+            </p>
           </div>
         ) : (
           submissions.map((submission) => (
@@ -203,7 +259,9 @@ export default function GameResults() {
                     <User className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-extrabold text-slate-800">{submission.participants?.display_name}</h3>
+                    <h3 className="text-xl font-extrabold text-slate-800">
+                      {submission.participants?.display_name}
+                    </h3>
                     <p className="text-sm font-medium text-slate-500 mt-1.5 flex items-center flex-wrap gap-2">
                       {submission.participants?.unit_name && (
                         <span className="text-orange-700 bg-orange-100/80 px-2.5 py-1 rounded-md border border-orange-200/50 shadow-sm">
@@ -217,7 +275,9 @@ export default function GameResults() {
                 </div>
                 {submission.score !== undefined && submission.score !== null && (
                   <div className="bg-orange-50 border border-orange-200 px-4 py-2 rounded-xl text-center shadow-inner">
-                    <p className="text-xs font-bold text-orange-500 uppercase tracking-wider mb-0.5">Điểm số</p>
+                    <p className="text-xs font-bold text-orange-500 uppercase tracking-wider mb-0.5">
+                      Điểm số
+                    </p>
                     <p className="text-2xl font-extrabold text-orange-700">{submission.score}</p>
                   </div>
                 )}
@@ -255,8 +315,12 @@ export default function GameResults() {
                         >
                           {displayAnswer}
                         </div>
-                        {isCorrect === true && <CheckCircle2 className="w-6 h-6 text-green-500 ml-4 flex-shrink-0" />}
-                        {isCorrect === false && <XCircle className="w-6 h-6 text-red-500 ml-4 flex-shrink-0" />}
+                        {isCorrect === true && (
+                          <CheckCircle2 className="w-6 h-6 text-green-500 ml-4 flex-shrink-0" />
+                        )}
+                        {isCorrect === false && (
+                          <XCircle className="w-6 h-6 text-red-500 ml-4 flex-shrink-0" />
+                        )}
                       </div>
                     </div>
                   );

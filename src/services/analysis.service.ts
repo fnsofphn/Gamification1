@@ -16,8 +16,12 @@ type AnalysisResult = {
 
 const isDemo = env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co';
 
+function cleanJsonText(text: string) {
+  return text.replace(/```json/gi, '').replace(/```/g, '').trim();
+}
+
 function parseJsonResponse(text: string): AnalysisResult {
-  const parsed = JSON.parse(text);
+  const parsed = JSON.parse(cleanJsonText(text));
 
   return {
     summary: typeof parsed.summary === 'string' ? parsed.summary : '',
@@ -48,14 +52,43 @@ async function saveAnalysis(params: {
   });
 }
 
+async function generateStructuredAnalysis(prompt: string) {
+  if (!geminiClient) {
+    throw new Error('Gemini API chưa được cấu hình. Hãy thêm VITE_GEMINI_API_KEY vào biến môi trường deploy.');
+  }
+
+  const response = await geminiClient.models.generateContent({
+    model: env.GEMINI_MODEL,
+    contents: prompt,
+    config: {
+      responseMimeType: 'application/json',
+    },
+  });
+
+  const resultText = response.text;
+  if (!resultText) {
+    throw new Error('Gemini không trả về nội dung phân tích.');
+  }
+
+  return parseJsonResponse(resultText);
+}
+
 export const analysisService = {
+  isConfigured() {
+    return Boolean(geminiClient);
+  },
+
+  getConfigurationMessage() {
+    if (geminiClient) return null;
+    return 'Chưa có Gemini API key. Hãy thêm VITE_GEMINI_API_KEY để bật chức năng phân tích AI.';
+  },
+
   async analyzeSubmission(gameId: string, sessionId: string, answers: AnswerForAnalysis[]) {
-    if (!geminiClient || answers.length === 0) {
+    if (answers.length === 0) {
       return null;
     }
 
-    try {
-      const prompt = `
+    const prompt = `
 Bạn là trợ lý phân tích phản hồi đào tạo bằng tiếng Việt.
 Hãy đọc câu trả lời của 1 học viên và trả về JSON hợp lệ theo cấu trúc:
 {
@@ -71,20 +104,10 @@ Yêu cầu:
 
 Dữ liệu đầu vào:
 ${answers.map((item, index) => `${index + 1}. ${item.question}\nTrả lời: ${item.answer}`).join('\n\n')}
-      `.trim();
+    `.trim();
 
-      const response = await geminiClient.models.generateContent({
-        model: env.GEMINI_MODEL,
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
-        },
-      });
-
-      const resultText = response.text;
-      if (!resultText) return null;
-
-      const analysis = parseJsonResponse(resultText);
+    try {
+      const analysis = await generateStructuredAnalysis(prompt);
       await saveAnalysis({
         gameId,
         sessionId,
@@ -95,17 +118,16 @@ ${answers.map((item, index) => `${index + 1}. ${item.question}\nTrả lời: ${i
       return analysis;
     } catch (error) {
       console.error('AI submission analysis failed:', error);
-      return null;
+      throw error;
     }
   },
 
   async summarizeGameFeedback(gameId: string, answers: AnswerForAnalysis[]) {
-    if (!geminiClient || answers.length === 0) {
+    if (answers.length === 0) {
       return null;
     }
 
-    try {
-      const prompt = `
+    const prompt = `
 Bạn là trợ lý tổng hợp phản hồi cho một game lấy ý kiến.
 Hãy phân tích toàn bộ ý kiến và trả về JSON hợp lệ theo cấu trúc:
 {
@@ -121,20 +143,10 @@ Yêu cầu:
 
 Dữ liệu phản hồi:
 ${answers.map((item, index) => `${index + 1}. ${item.question}\nÝ kiến: ${item.answer}`).join('\n\n')}
-      `.trim();
+    `.trim();
 
-      const response = await geminiClient.models.generateContent({
-        model: env.GEMINI_MODEL,
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
-        },
-      });
-
-      const resultText = response.text;
-      if (!resultText) return null;
-
-      const analysis = parseJsonResponse(resultText);
+    try {
+      const analysis = await generateStructuredAnalysis(prompt);
       await saveAnalysis({
         gameId,
         sessionId: null,
@@ -145,7 +157,7 @@ ${answers.map((item, index) => `${index + 1}. ${item.question}\nÝ kiến: ${ite
       return analysis;
     } catch (error) {
       console.error('AI game summary analysis failed:', error);
-      return null;
+      throw error;
     }
   },
 
