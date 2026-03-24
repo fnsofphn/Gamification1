@@ -53,8 +53,39 @@ async function saveAnalysis(params: {
 }
 
 async function generateStructuredAnalysis(prompt: string) {
+  try {
+    const response = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt }),
+    });
+
+    if (response.ok) {
+      const payload = await response.json();
+      if (!payload?.text) {
+        throw new Error('Gemini API returned an empty response.');
+      }
+      return parseJsonResponse(payload.text);
+    }
+
+    if (response.status !== 404) {
+      const payload = await response.json().catch(() => null);
+      throw new Error(payload?.error || 'Gemini server analysis failed.');
+    }
+  } catch (error) {
+    if (!geminiClient) {
+      throw error instanceof Error
+        ? error
+        : new Error('Gemini API chưa được cấu hình trên server hoặc frontend.');
+    }
+  }
+
   if (!geminiClient) {
-    throw new Error('Gemini API chưa được cấu hình. Hãy thêm VITE_GEMINI_API_KEY vào biến môi trường deploy.');
+    throw new Error(
+      'Gemini API chưa được cấu hình. Trên Vercel hãy thêm GEMINI_API_KEY, hoặc khi chạy local hãy thêm VITE_GEMINI_API_KEY.'
+    );
   }
 
   const response = await geminiClient.models.generateContent({
@@ -75,12 +106,11 @@ async function generateStructuredAnalysis(prompt: string) {
 
 export const analysisService = {
   isConfigured() {
-    return Boolean(geminiClient);
+    return true;
   },
 
   getConfigurationMessage() {
-    if (geminiClient) return null;
-    return 'Chưa có Gemini API key. Hãy thêm VITE_GEMINI_API_KEY để bật chức năng phân tích AI.';
+    return 'Nếu đang deploy trên Vercel, hãy thêm GEMINI_API_KEY. Nếu đang chạy local, hãy thêm VITE_GEMINI_API_KEY.';
   },
 
   async analyzeSubmission(gameId: string, sessionId: string, answers: AnswerForAnalysis[]) {
