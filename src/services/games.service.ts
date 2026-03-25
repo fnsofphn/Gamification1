@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase/client';
+﻿import { supabase } from '../lib/supabase/client';
 import { Database } from '../types/database';
 import { env } from '../lib/env';
 import { slugify } from '../lib/utils';
@@ -41,7 +41,7 @@ const CANONICAL_GAME_COPY: Record<
   'gamification-01': {
     title: 'Gamification 01 - Tương tác lấy ý kiến',
     short_description:
-      'Hoạt động giúp học viên chia sẻ cảm nhận về thay đổi tại cửa hàng, điểm yếu trải nghiệm khách hàng và hành động cần làm ngay sau khóa học.',
+      'Loại game: Thu thập ý kiến • 3 câu hỏi',
     instructions:
       '• Đọc kỹ 3 câu hỏi trước khi trả lời\n• Bạn có 180 giây để hoàn thành\n• Hệ thống sẽ tự động nộp bài khi hết giờ',
     duration_seconds: 180,
@@ -49,7 +49,7 @@ const CANONICAL_GAME_COPY: Record<
   'gamification-02': {
     title: 'Gamification 02 - Bản đồ hành động của CHT trong giai đoạn mới',
     short_description:
-      'Quiz tương tác về các hành vi quản lý đúng/sai trong giao việc, kiểm tra, họp, báo cáo, xử lý sai lệch và ra quyết định tại hiện trường.',
+      'Loại game: Trắc nghiệm tình huống • 8 câu hỏi',
     instructions:
       '• Đọc kỹ từng tình huống\n• Chọn 1 đáp án đúng nhất\n• Hoàn thành trong 300 giây',
     duration_seconds: 300,
@@ -57,7 +57,7 @@ const CANONICAL_GAME_COPY: Record<
   'gamification-03': {
     title: 'Gamification 03 - Điểm chạm nào quyết định niềm tin?',
     short_description:
-      'Học viên xếp hạng các điểm chạm theo mức độ ảnh hưởng tới niềm tin khách hàng trên nền tảng web.',
+      'Loại game: Xếp hạng ưu tiên • 1 câu hỏi',
     instructions:
       '• Sắp xếp các điểm chạm theo thứ tự ảnh hưởng giảm dần\n• Dùng nút Lên/Xuống để đổi vị trí\n• Hoàn thành trong 180 giây',
     duration_seconds: 180,
@@ -677,3 +677,4 @@ export const gamesService = {
     return createdGame;
   },
 };
+

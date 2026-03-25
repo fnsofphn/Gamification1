@@ -3,7 +3,7 @@ values
   (
     'gamification-01',
     'Gamification 01 - Tương tác lấy ý kiến',
-    'Hoạt động giúp học viên chia sẻ cảm nhận về thay đổi tại cửa hàng, điểm yếu trải nghiệm khách hàng và hành động cần làm ngay sau khóa học.',
+    'Loại game: Thu thập ý kiến • 3 câu hỏi',
     '• Đọc kỹ câu hỏi trước khi trả lời
 • Bạn có 180 giây để hoàn thành
 • Hệ thống sẽ tự động nộp bài khi hết giờ',
@@ -13,7 +13,7 @@ values
   (
     'gamification-02',
     'Gamification 02 - Bản đồ hành động của CHT trong giai đoạn mới',
-    'Quiz tương tác về các hành vi quản lý đúng/sai trong giao việc, kiểm tra, họp, báo cáo, xử lý sai lệch và ra quyết định tại hiện trường.',
+    'Loại game: Trắc nghiệm tình huống • 8 câu hỏi',
     '• Đọc kỹ từng tình huống
 • Chọn 1 đáp án đúng nhất
 • Hoàn thành trong 300 giây',
@@ -23,7 +23,7 @@ values
   (
     'gamification-03',
     'Gamification 03 - Điểm chạm nào quyết định niềm tin?',
-    'Học viên xếp hạng các điểm chạm theo mức độ ảnh hưởng tới niềm tin khách hàng trên nền tảng web.',
+    'Loại game: Xếp hạng ưu tiên • 1 câu hỏi',
     '• Sắp xếp các điểm chạm từ quan trọng nhất đến ít quan trọng hơn
 • Dùng nút Lên/Xuống để thay đổi vị trí
 • Hoàn thành trong 180 giây',
@@ -62,4 +62,5 @@ join (
     ('gamification-03', 1, 'Sắp xếp các điểm chạm sau theo mức độ ảnh hưởng tới niềm tin khách hàng (quan trọng nhất ở trên cùng):', 'ranking', array['Đón tiếp khách hàng', 'Thao tác bơm hàng', 'Minh bạch thông tin', 'Thanh toán nhanh chóng, chính xác', 'Xử lý khiếu nại, thắc mắc', 'Vệ sinh khu vực cửa hàng', 'An toàn phòng chống cháy nổ', 'Thái độ nhân viên'], null::text, true)
 ) as q(slug, question_order, question_text, question_type, options, correct_answer, is_required)
   on g.slug = q.slug;
+
 
