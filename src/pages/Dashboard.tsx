@@ -9,10 +9,9 @@ const initialForm = {
   title: '',
   slug: '',
   shortDescription: '',
-  instructions:
-    '• Đọc kỹ câu hỏi trước khi trả lời\n• Hệ thống sẽ đếm ngược theo thời gian cấu hình\n• Nhấn Hoàn thành để nộp bài',
+  instructions: '',
   durationSeconds: '180',
-  questions: 'Cửa hàng đang thay đổi mạnh nhất ở điểm nào?\nĐiểm yếu lớn nhất hiện nay trong trải nghiệm khách hàng là gì?\nĐiều gì cần làm ngay sau khóa học?',
+  questions: '',
 };
 
 export default function Dashboard() {
@@ -54,7 +53,7 @@ export default function Dashboard() {
           })),
       });
 
-      alert('Đã tạo game mới và thêm vào thư viện.');
+      alert('Đã tạo game.');
       setForm(initialForm);
       navigate(`/games/${createdGame.slug}`);
     } catch (error: any) {
@@ -66,18 +65,27 @@ export default function Dashboard() {
   };
 
   if (loading) {
-    return <div className="min-h-[80vh] flex items-center justify-center text-blue-600 font-bold text-xl">Đang tải dashboard...</div>;
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center text-blue-600 font-bold text-xl">
+        Đang tải quản trị...
+      </div>
+    );
   }
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 animate-fade-in-up">
       <div className="flex items-center justify-between mb-10">
         <div>
-          <Link to="/" className="inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-800 mb-4 transition-colors">
+          <Link
+            to="/"
+            className="inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-800 mb-4 transition-colors"
+          >
             <ArrowLeft className="mr-2 w-4 h-4" />
             Về trang chủ
           </Link>
-          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-800 drop-shadow-sm">Dashboard quản trị</h1>
+          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-800 drop-shadow-sm">
+            Quản trị
+          </h1>
         </div>
       </div>
 
@@ -87,7 +95,7 @@ export default function Dashboard() {
             <Gamepad2 className="w-8 h-8" />
           </div>
           <div>
-            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Game đang mở</p>
+            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Game</p>
             <p className="text-4xl font-extrabold text-slate-800 drop-shadow-sm">{stats.activeGames}</p>
           </div>
         </div>
@@ -97,7 +105,7 @@ export default function Dashboard() {
             <Users className="w-8 h-8" />
           </div>
           <div>
-            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Học viên</p>
+            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Người chơi</p>
             <p className="text-4xl font-extrabold text-slate-800 drop-shadow-sm">{stats.totalParticipants}</p>
           </div>
         </div>
@@ -107,7 +115,7 @@ export default function Dashboard() {
             <FileText className="w-8 h-8" />
           </div>
           <div>
-            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Lượt nộp bài</p>
+            <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Bài nộp</p>
             <p className="text-4xl font-extrabold text-slate-800 drop-shadow-sm">{stats.totalSubmissions}</p>
           </div>
         </div>
@@ -117,7 +125,7 @@ export default function Dashboard() {
         <div className="card-3d p-8">
           <div className="flex items-center gap-3 mb-6">
             <PlusSquare className="w-6 h-6 text-orange-700" />
-            <h2 className="text-2xl font-extrabold text-slate-800">Thêm gamification mới</h2>
+            <h2 className="text-2xl font-extrabold text-slate-800">Thêm game</h2>
           </div>
           <form onSubmit={handleCreateGame} className="space-y-5">
             <input
@@ -139,7 +147,7 @@ export default function Dashboard() {
               value={form.slug}
               onChange={(event) => setForm((previous) => ({ ...previous, slug: slugify(event.target.value) }))}
               className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3 font-medium text-slate-800"
-              placeholder="slug-game"
+              placeholder="Slug"
               required
             />
             <textarea
@@ -155,7 +163,7 @@ export default function Dashboard() {
               value={form.instructions}
               onChange={(event) => setForm((previous) => ({ ...previous, instructions: event.target.value }))}
               className="w-full rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-3 font-medium text-slate-800 resize-none"
-              placeholder="Hướng dẫn tham gia"
+              placeholder="Hướng dẫn"
               required
             />
             <input
@@ -177,7 +185,7 @@ export default function Dashboard() {
               required
             />
             <button type="submit" disabled={saving} className="btn-3d-orange w-full py-4 text-lg disabled:opacity-60">
-              {saving ? 'Đang tạo game...' : 'Tạo game mới'}
+              {saving ? 'Đang tạo...' : 'Tạo game'}
             </button>
           </form>
         </div>
@@ -189,7 +197,7 @@ export default function Dashboard() {
               <thead>
                 <tr className="border-b-2 border-slate-200/60">
                   <th className="pb-4 font-bold text-slate-500 uppercase tracking-wider text-sm">Thời gian</th>
-                  <th className="pb-4 font-bold text-slate-500 uppercase tracking-wider text-sm">Học viên</th>
+                  <th className="pb-4 font-bold text-slate-500 uppercase tracking-wider text-sm">Người chơi</th>
                   <th className="pb-4 font-bold text-slate-500 uppercase tracking-wider text-sm">Đơn vị</th>
                   <th className="pb-4 font-bold text-slate-500 uppercase tracking-wider text-sm">Game</th>
                   <th className="pb-4 font-bold text-slate-500 uppercase tracking-wider text-sm">Trạng thái</th>

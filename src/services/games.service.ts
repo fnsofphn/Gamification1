@@ -47,11 +47,11 @@ const MOCK_GAME: Game = {
 const MOCK_GAME_2: Game = {
   id: '22222222-2222-2222-2222-222222222222',
   slug: 'gamification-02',
-  title: 'Gamification 02 - Bản đồ hành động của CHT',
+  title: 'Gamification 02 - Bản đồ hành động của CHT trong giai đoạn mới',
   short_description:
-    'Quiz tương tác: lựa chọn hành vi đúng trong các tình huống quản lý cửa hàng thực tế.',
+    'Quiz tương tác về các hành vi quản lý đúng/sai trong giao việc, kiểm tra, họp, báo cáo, xử lý sai lệch và ra quyết định tại hiện trường.',
   instructions:
-    '• Đọc kỹ tình huống và chọn 1 đáp án đúng nhất\n• Bạn có 300 giây để hoàn thành 8 câu hỏi\n• Hệ thống sẽ tự động nộp bài khi hết giờ',
+    '• Đọc kỹ từng tình huống\n• Chọn 1 đáp án đúng nhất\n• Hoàn thành trong 300 giây',
   duration_seconds: 300,
   is_active: true,
   created_at: now(),
@@ -62,9 +62,9 @@ const MOCK_GAME_3: Game = {
   slug: 'gamification-03',
   title: 'Gamification 03 - Điểm chạm nào quyết định niềm tin?',
   short_description:
-    'Sắp xếp các điểm chạm theo mức độ ảnh hưởng tới niềm tin khách hàng tại cửa hàng.',
+    'Học viên xếp hạng các điểm chạm theo mức độ ảnh hưởng tới niềm tin khách hàng trên nền tảng web.',
   instructions:
-    '• Sắp xếp các điểm chạm theo thứ tự quan trọng giảm dần\n• Dùng nút Lên/Xuống để đổi vị trí\n• Bạn có 180 giây để hoàn thành',
+    '• Sắp xếp các điểm chạm theo thứ tự quan trọng giảm dần\n• Dùng nút Lên/Xuống để đổi vị trí\n• Hoàn thành trong 180 giây',
   duration_seconds: 180,
   is_active: true,
   created_at: now(),
@@ -144,7 +144,7 @@ const MOCK_QUESTIONS_2: Question[] = [
     question_text: 'Tổ chức họp giao ca hàng ngày nên tập trung vào điều gì?',
     question_type: 'multiple_choice',
     options: [
-      'A. Chỉ trích các cá nhân làm chưa tốt ngày hôm qua',
+      'A. Chỉ trích cá nhân làm chưa tốt ngày hôm qua',
       'B. Đánh giá nhanh kết quả hôm qua, phổ biến mục tiêu hôm nay và động viên tinh thần',
       'C. Bỏ qua họp giao ca nếu thấy không cần thiết',
     ],
@@ -164,7 +164,7 @@ const MOCK_QUESTIONS_3: Question[] = [
       'Sắp xếp các điểm chạm sau theo mức độ ảnh hưởng tới niềm tin khách hàng (quan trọng nhất ở trên cùng):',
     question_type: 'ranking',
     options: [
-      'Minh bạch thông tin (đồng hồ, giá cả)',
+      'Minh bạch thông tin',
       'Thái độ nhân viên',
       'Thao tác bơm hàng',
       'An toàn phòng chống cháy nổ',

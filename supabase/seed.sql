@@ -1,32 +1,32 @@
-insert into public.games (slug, title, short_description, instructions, duration_seconds, is_active)
+﻿insert into public.games (slug, title, short_description, instructions, duration_seconds, is_active)
 values
   (
     'gamification-01',
-    'Gamification 01 - Tuong tac lay y kien',
-    'Hoat dong giup hoc vien chia se cam nhan ve thay doi tai cua hang, diem yeu trai nghiem khach hang va hanh dong can lam ngay sau khoa hoc.',
-    'Doc ky cau hoi truoc khi tra loi
-Ban co 180 giay de hoan thanh
-He thong se tu dong nop bai khi het gio',
+    'Gamification 01 - Tương tác lấy ý kiến',
+    'Hoạt động giúp học viên chia sẻ cảm nhận về thay đổi tại cửa hàng, điểm yếu trải nghiệm khách hàng và hành động cần làm ngay sau khóa học.',
+    '• Đọc kỹ câu hỏi trước khi trả lời
+• Bạn có 180 giây để hoàn thành
+• Hệ thống sẽ tự động nộp bài khi hết giờ',
     180,
     true
   ),
   (
     'gamification-02',
-    'Gamification 02 - Ban do hanh dong cua CHT trong giai doan moi',
-    'Quiz tuong tac ve cac hanh vi quan ly dung sai trong giao viec, kiem tra, hop, bao cao, xu ly sai lech va ra quyet dinh tai hien truong.',
-    'Doc ky tung tinh huong
-Chon 1 dap an dung nhat
-Hoan thanh trong 300 giay',
+    'Gamification 02 - Bản đồ hành động của CHT trong giai đoạn mới',
+    'Quiz tương tác về các hành vi quản lý đúng/sai trong giao việc, kiểm tra, họp, báo cáo, xử lý sai lệch và ra quyết định tại hiện trường.',
+    '• Đọc kỹ từng tình huống
+• Chọn 1 đáp án đúng nhất
+• Hoàn thành trong 300 giây',
     300,
     true
   ),
   (
     'gamification-03',
-    'Gamification 03 - Diem cham nao quyet dinh niem tin?',
-    'Hoc vien xep hang cac diem cham theo muc do anh huong toi niem tin khach hang tren nen tang web.',
-    'Sap xep cac diem cham tu quan trong nhat den it quan trong hon
-Dung nut Len Xuong de thay doi vi tri
-Hoan thanh trong 180 giay',
+    'Gamification 03 - Điểm chạm nào quyết định niềm tin?',
+    'Học viên xếp hạng các điểm chạm theo mức độ ảnh hưởng tới niềm tin khách hàng trên nền tảng web.',
+    '• Sắp xếp các điểm chạm từ quan trọng nhất đến ít quan trọng hơn
+• Dùng nút Lên/Xuống để thay đổi vị trí
+• Hoàn thành trong 180 giây',
     180,
     true
   )
@@ -48,17 +48,17 @@ select g.id, q.question_order, q.question_text, q.question_type, q.options, q.co
 from public.games g
 join (
   values
-    ('gamification-01', 1, 'Cua hang dang thay doi manh nhat o diem nao?', 'textarea', null::text[], null::text, true),
-    ('gamification-01', 2, 'Diem yeu lon nhat hien nay trong trai nghiem khach hang la gi?', 'textarea', null::text[], null::text, true),
-    ('gamification-01', 3, 'Dieu gi can lam ngay sau khoa hoc?', 'textarea', null::text[], null::text, true),
-    ('gamification-02', 1, 'Khi giao viec cho nhan vien moi, CHT nen lam gi?', 'multiple_choice', array['A. Chi giao viec va yeu cau hoan thanh dung han', 'B. Giao viec, huong dan chi tiet, dat deadline va kiem tra tien do', 'C. De nhan vien tu tim hieu va lam theo cach cua ho'], 'B. Giao viec, huong dan chi tiet, dat deadline va kiem tra tien do', true),
-    ('gamification-02', 2, 'Trong qua trinh kiem tra cua hang, phat hien nhan vien lam sai quy trinh.', 'multiple_choice', array['A. Quat mang nhan vien ngay truoc mat khach hang', 'B. Ghi nhan loi, goi rieng nhan vien ra nhac nho va huong dan lai quy trinh', 'C. Bo qua vi luc do dang dong khach'], 'B. Ghi nhan loi, goi rieng nhan vien ra nhac nho va huong dan lai quy trinh', true),
-    ('gamification-02', 3, 'To chuc hop giao ca hang ngay nen tap trung vao dieu gi?', 'multiple_choice', array['A. Chi trich ca nhan lam chua tot', 'B. Danh gia nhanh ket qua hom qua, pho bien muc tieu hom nay va dong vien tinh than', 'C. Bo qua hop giao ca neu dang ban'], 'B. Danh gia nhanh ket qua hom qua, pho bien muc tieu hom nay va dong vien tinh than', true),
-    ('gamification-02', 4, 'Bao cao doanh thu cuoi ngay khong khop voi thuc te.', 'multiple_choice', array['A. Tu sua so lieu cho khop roi nop', 'B. Ra soat lai chung tu, tim nguyen nhan va bao cao trung thuc', 'C. De cuoi tuan xu ly mot lan'], 'B. Ra soat lai chung tu, tim nguyen nhan va bao cao trung thuc', true),
-    ('gamification-02', 5, 'Khi phat hien sai lech hang hoa trong kho, hanh dong phu hop la gi?', 'multiple_choice', array['A. Che giau so lieu de tranh bi phat', 'B. Lap bien ban, tim nguyen nhan va de xuat giai phap phong ngua', 'C. Do loi ngay cho ca truoc'], 'B. Lap bien ban, tim nguyen nhan va de xuat giai phap phong ngua', true),
-    ('gamification-02', 6, 'Khi co khach hang khieu nai gay gat tai hien truong, CHT nen lam gi?', 'multiple_choice', array['A. Tranh cai de bao ve cua hang', 'B. Lang nghe, xin loi, lam diu tinh hinh roi xu ly theo chinh sach', 'C. Day trach nhiem cho nhan vien'], 'B. Lang nghe, xin loi, lam diu tinh hinh roi xu ly theo chinh sach', true),
-    ('gamification-02', 7, 'Mot nhan vien gioi co dau hieu chan nan, giam hieu suat.', 'multiple_choice', array['A. Mac ke, ai khong lam duoc thi nghi', 'B. Gap rieng 1-1 de tim hieu kho khan va ho tro kip thoi', 'C. Phe binh truoc toan cua hang'], 'B. Gap rieng 1-1 de tim hieu kho khan va ho tro kip thoi', true),
-    ('gamification-02', 8, 'Cua hang dang dong khach, khu vuc thu ngan qua tai.', 'multiple_choice', array['A. Chi nhac nhan vien lam nhanh hon', 'B. Truc tiep ho tro hoac dieu phoi them nguoi sang ho tro', 'C. Roi quay de lam viec khac'], 'B. Truc tiep ho tro hoac dieu phoi them nguoi sang ho tro', true),
-    ('gamification-03', 1, 'Sap xep cac diem cham sau theo muc do anh huong toi niem tin khach hang quan trong nhat o tren cung:', 'ranking', array['Don tiep khach hang', 'Thao tac bom hang', 'Minh bach thong tin', 'Thanh toan nhanh chong chinh xac', 'Xu ly khieu nai thac mac', 'Ve sinh khu vuc cua hang', 'An toan phong chong chay no', 'Thai do nhan vien'], null::text, true)
+    ('gamification-01', 1, 'Cửa hàng đang thay đổi mạnh nhất ở điểm nào?', 'textarea', null::text[], null::text, true),
+    ('gamification-01', 2, 'Điểm yếu lớn nhất hiện nay trong trải nghiệm khách hàng là gì?', 'textarea', null::text[], null::text, true),
+    ('gamification-01', 3, 'Điều gì cần làm ngay sau khóa học?', 'textarea', null::text[], null::text, true),
+    ('gamification-02', 1, 'Khi giao việc cho nhân viên mới, CHT nên làm gì?', 'multiple_choice', array['A. Chỉ giao việc và yêu cầu hoàn thành đúng hạn', 'B. Giao việc, hướng dẫn chi tiết, đặt deadline và kiểm tra tiến độ', 'C. Để nhân viên tự tìm hiểu và làm theo cách của họ'], 'B. Giao việc, hướng dẫn chi tiết, đặt deadline và kiểm tra tiến độ', true),
+    ('gamification-02', 2, 'Trong quá trình kiểm tra cửa hàng, phát hiện nhân viên làm sai quy trình.', 'multiple_choice', array['A. Quát mắng nhân viên ngay trước mặt khách hàng', 'B. Ghi nhận lỗi, gọi riêng nhân viên ra nhắc nhở và hướng dẫn lại quy trình', 'C. Bỏ qua vì lúc đó đang đông khách'], 'B. Ghi nhận lỗi, gọi riêng nhân viên ra nhắc nhở và hướng dẫn lại quy trình', true),
+    ('gamification-02', 3, 'Tổ chức họp giao ca hàng ngày nên tập trung vào điều gì?', 'multiple_choice', array['A. Chỉ trích cá nhân làm chưa tốt', 'B. Đánh giá nhanh kết quả hôm qua, phổ biến mục tiêu hôm nay và động viên tinh thần', 'C. Bỏ qua họp giao ca nếu đang bận'], 'B. Đánh giá nhanh kết quả hôm qua, phổ biến mục tiêu hôm nay và động viên tinh thần', true),
+    ('gamification-02', 4, 'Báo cáo doanh thu cuối ngày không khớp với thực tế.', 'multiple_choice', array['A. Tự sửa số liệu cho khớp rồi nộp', 'B. Rà soát lại chứng từ, tìm nguyên nhân và báo cáo trung thực', 'C. Để cuối tuần xử lý một lần'], 'B. Rà soát lại chứng từ, tìm nguyên nhân và báo cáo trung thực', true),
+    ('gamification-02', 5, 'Khi phát hiện sai lệch hàng hóa trong kho, hành động phù hợp là gì?', 'multiple_choice', array['A. Che giấu số liệu để tránh bị phạt', 'B. Lập biên bản, tìm nguyên nhân và đề xuất giải pháp phòng ngừa', 'C. Đổ lỗi ngay cho ca trước'], 'B. Lập biên bản, tìm nguyên nhân và đề xuất giải pháp phòng ngừa', true),
+    ('gamification-02', 6, 'Khi có khách hàng khiếu nại gay gắt tại hiện trường, CHT nên làm gì?', 'multiple_choice', array['A. Tranh cãi để bảo vệ cửa hàng', 'B. Lắng nghe, xin lỗi, làm dịu tình hình rồi xử lý theo chính sách', 'C. Đẩy trách nhiệm cho nhân viên'], 'B. Lắng nghe, xin lỗi, làm dịu tình hình rồi xử lý theo chính sách', true),
+    ('gamification-02', 7, 'Một nhân viên giỏi có dấu hiệu chán nản, giảm hiệu suất.', 'multiple_choice', array['A. Mặc kệ, ai không làm được thì nghỉ', 'B. Gặp riêng 1-1 để tìm hiểu khó khăn và hỗ trợ kịp thời', 'C. Phê bình trước toàn cửa hàng'], 'B. Gặp riêng 1-1 để tìm hiểu khó khăn và hỗ trợ kịp thời', true),
+    ('gamification-02', 8, 'Cửa hàng đang đông khách, khu vực thu ngân quá tải.', 'multiple_choice', array['A. Chỉ nhắc nhân viên làm nhanh hơn', 'B. Trực tiếp hỗ trợ hoặc điều phối thêm người sang hỗ trợ', 'C. Rời quầy để làm việc khác'], 'B. Trực tiếp hỗ trợ hoặc điều phối thêm người sang hỗ trợ', true),
+    ('gamification-03', 1, 'Sắp xếp các điểm chạm sau theo mức độ ảnh hưởng tới niềm tin khách hàng (quan trọng nhất ở trên cùng):', 'ranking', array['Đón tiếp khách hàng', 'Thao tác bơm hàng', 'Minh bạch thông tin', 'Thanh toán nhanh chóng, chính xác', 'Xử lý khiếu nại, thắc mắc', 'Vệ sinh khu vực cửa hàng', 'An toàn phòng chống cháy nổ', 'Thái độ nhân viên'], null::text, true)
 ) as q(slug, question_order, question_text, question_type, options, correct_answer, is_required)
   on g.slug = q.slug;

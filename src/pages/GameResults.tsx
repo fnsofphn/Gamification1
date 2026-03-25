@@ -78,13 +78,6 @@ export default function GameResults() {
     setAnalysisError(null);
 
     try {
-      if (!analysisService.isConfigured()) {
-        const message = analysisService.getConfigurationMessage();
-        setAnalysisError(message);
-        alert(message);
-        return;
-      }
-
       const payload = submissions.flatMap((submission) =>
         (submission.game_answers || []).map((answer: any) => ({
           question: answer.game_questions?.question_text || `Câu hỏi ${answer.question_id}`,
@@ -96,7 +89,7 @@ export default function GameResults() {
       setAnalysis(result);
     } catch (error) {
       console.error(error);
-      const message = error instanceof Error ? error.message : 'Không thể phân tích dữ liệu bằng Gemini.';
+      const message = error instanceof Error ? error.message : 'Không thể phân tích dữ liệu.';
       setAnalysisError(message);
       alert(message);
     } finally {
@@ -123,13 +116,11 @@ export default function GameResults() {
             className="inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-800 mb-4 transition-colors"
           >
             <ArrowLeft className="mr-2 w-4 h-4" />
-            Quay lại chi tiết game
+            Quay lại
           </Link>
-          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-800 drop-shadow-sm">
-            Kết quả ý kiến
-          </h1>
+          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-800 drop-shadow-sm">Kết quả</h1>
           <p className="text-lg text-slate-600 mt-3 font-medium">
-            Game: <span className="text-blue-700">{game.title}</span>
+            <span className="text-blue-700">{game.title}</span>
           </p>
         </div>
 
@@ -140,7 +131,7 @@ export default function GameResults() {
             className="btn-3d-blue px-6 py-3.5 text-base disabled:opacity-60"
           >
             <Sparkles className="w-5 h-5 mr-2" />
-            {analysisLoading ? 'Đang phân tích...' : 'Phân tích bằng Gemini'}
+            {analysisLoading ? 'Đang phân tích...' : 'Phân tích AI'}
           </button>
           <button
             onClick={() => exportService.exportSubmissionsToCSV(game.id, game.slug)}
@@ -163,10 +154,10 @@ export default function GameResults() {
         <div className="card-3d p-8">
           <div className="flex items-center gap-3 mb-6">
             <BarChart3 className="w-6 h-6 text-blue-700" />
-            <h2 className="text-2xl font-extrabold text-slate-800">Tổng hợp ý kiến theo câu hỏi</h2>
+            <h2 className="text-2xl font-extrabold text-slate-800">Tổng hợp theo câu hỏi</h2>
           </div>
           {groupedByQuestion.length === 0 ? (
-            <div className="text-slate-500 font-medium">Chưa có dữ liệu để tổng hợp.</div>
+            <div className="text-slate-500 font-medium">Chưa có dữ liệu.</div>
           ) : (
             <div className="space-y-6">
               {groupedByQuestion.map((item) => (
@@ -197,10 +188,7 @@ export default function GameResults() {
               </div>
             )}
             {!analysis ? (
-              <p className="text-slate-600 font-medium leading-relaxed">
-                Chưa có bản phân tích nào. Nhấn nút <strong>Phân tích bằng Gemini</strong> để tạo bản
-                tổng hợp từ toàn bộ ý kiến của học viên.
-              </p>
+              <p className="text-slate-600 font-medium leading-relaxed">Chưa có bản phân tích.</p>
             ) : (
               <div className="space-y-5">
                 <p className="text-slate-700 font-medium leading-relaxed">{analysis.summary}</p>
@@ -233,9 +221,9 @@ export default function GameResults() {
           </div>
 
           <div className="card-3d p-8">
-            <h2 className="text-2xl font-extrabold text-slate-800 mb-5">Danh sách bài làm</h2>
+            <h2 className="text-2xl font-extrabold text-slate-800 mb-5">Bài làm</h2>
             <div className="text-sm text-slate-600 font-medium">
-              Tổng số lượt tham gia hoàn thành: <strong>{submissions.length}</strong>
+              Tổng số lượt hoàn thành: <strong>{submissions.length}</strong>
             </div>
           </div>
         </div>
@@ -245,10 +233,7 @@ export default function GameResults() {
         {submissions.length === 0 ? (
           <div className="card-3d p-12 text-center">
             <FileText className="w-16 h-16 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-slate-800">Chưa có ý kiến nào</h3>
-            <p className="text-slate-500 mt-2 font-medium">
-              Hãy mời học viên tham gia game để thu thập dữ liệu.
-            </p>
+            <h3 className="text-xl font-bold text-slate-800">Chưa có dữ liệu</h3>
           </div>
         ) : (
           submissions.map((submission) => (
@@ -269,15 +254,15 @@ export default function GameResults() {
                         </span>
                       )}
                       <span className="text-slate-400">•</span>
-                      <span>{submission.submitted_at ? new Date(submission.submitted_at).toLocaleString() : '-'}</span>
+                      <span>
+                        {submission.submitted_at ? new Date(submission.submitted_at).toLocaleString() : '-'}
+                      </span>
                     </p>
                   </div>
                 </div>
                 {submission.score !== undefined && submission.score !== null && (
                   <div className="bg-orange-50 border border-orange-200 px-4 py-2 rounded-xl text-center shadow-inner">
-                    <p className="text-xs font-bold text-orange-500 uppercase tracking-wider mb-0.5">
-                      Điểm số
-                    </p>
+                    <p className="text-xs font-bold text-orange-500 uppercase tracking-wider mb-0.5">Điểm</p>
                     <p className="text-2xl font-extrabold text-orange-700">{submission.score}</p>
                   </div>
                 )}

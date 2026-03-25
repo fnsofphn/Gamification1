@@ -31,9 +31,6 @@ export default function Games() {
         <h1 className="text-3xl md:text-5xl font-extrabold text-slate-800 mb-4 drop-shadow-sm">
           Thư viện gamification
         </h1>
-        <p className="text-lg text-slate-600 font-medium">
-          Chọn một game để bắt đầu. Bạn có thể thêm thêm game mới trong khu vực quản trị.
-        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -59,7 +56,7 @@ export default function Games() {
             </div>
             <Link to={`/games/${game.slug}`} className="btn-3d-orange w-full py-3.5 mt-auto text-lg">
               <PlayCircle className="mr-2 w-5 h-5" />
-              Xem chi tiết
+              Chi tiết
             </Link>
           </div>
         ))}

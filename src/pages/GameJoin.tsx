@@ -39,7 +39,7 @@ export default function GameJoin() {
       navigate(`/games/${game.slug}/play`);
     } catch (error) {
       console.error(error);
-      alert('Có lỗi xảy ra, vui lòng thử lại.');
+      alert('Có lỗi xảy ra. Vui lòng thử lại.');
       setLoading(false);
     }
   };
@@ -48,17 +48,17 @@ export default function GameJoin() {
 
   return (
     <div className="max-w-xl mx-auto p-4 md:p-8 animate-fade-in-up">
-      <Link to={`/games/${game.slug}`} className="inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-800 mb-6 transition-colors">
+      <Link
+        to={`/games/${game.slug}`}
+        className="inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-800 mb-6 transition-colors"
+      >
         <ArrowLeft className="mr-2 w-4 h-4" />
         Quay lại
       </Link>
 
       <div className="card-3d p-8 md:p-10">
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-extrabold text-slate-800 mb-3 drop-shadow-sm">Nhập thông tin để chơi</h1>
-          <p className="text-slate-600 font-medium">
-            Người chơi cần nhập tên trước khi bắt đầu. Hệ thống sẽ lưu dữ liệu bài làm vào Supabase.
-          </p>
+          <h1 className="text-3xl font-extrabold text-slate-800 mb-3 drop-shadow-sm">Thông tin người chơi</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -74,7 +74,7 @@ export default function GameJoin() {
                 value={displayName}
                 onChange={(event) => setDisplayName(event.target.value)}
                 className="block w-full pl-11 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium text-slate-800 shadow-inner"
-                placeholder="Nhập họ tên của bạn"
+                placeholder="Nhập họ và tên"
               />
             </div>
           </div>
@@ -90,7 +90,7 @@ export default function GameJoin() {
                 value={unitName}
                 onChange={(event) => setUnitName(event.target.value)}
                 className="block w-full pl-11 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium text-slate-800 shadow-inner"
-                placeholder="Nhập tên đơn vị nếu cần"
+                placeholder="Nhập đơn vị"
               />
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function GameJoin() {
             disabled={loading || !displayName.trim()}
             className="btn-3d-orange w-full py-4 text-lg mt-6 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Đang vào game...' : 'Bắt đầu chơi'}
+            {loading ? 'Đang vào game...' : 'Bắt đầu'}
             {!loading && <PlayCircle className="ml-2 w-6 h-6" />}
           </button>
         </form>

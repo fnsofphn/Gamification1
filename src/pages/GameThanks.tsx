@@ -14,16 +14,16 @@ export default function GameThanks() {
           <CheckCircle className="w-12 h-12" />
         </div>
 
-        <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800 mb-4 drop-shadow-sm">Cảm ơn bạn!</h1>
+        <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800 mb-4 drop-shadow-sm">Hoàn thành</h1>
         <p className="text-lg text-slate-600 mb-8 font-medium leading-relaxed">
-          Câu trả lời của bạn đã được ghi nhận. Dữ liệu vừa nộp đã sẵn sàng cho phần tổng hợp và phân tích.
+          Câu trả lời của bạn đã được ghi nhận.
         </p>
 
         {score !== null && total !== null && (
           <div className="bg-gradient-to-br from-orange-50 to-orange-100 border border-orange-200 rounded-2xl p-6 mb-8 shadow-inner">
             <div className="flex items-center justify-center text-orange-600 mb-2">
               <Award className="w-8 h-8 mr-2" />
-              <span className="text-xl font-bold uppercase tracking-wide">Điểm của bạn</span>
+              <span className="text-xl font-bold uppercase tracking-wide">Kết quả</span>
             </div>
             <div className="text-5xl font-extrabold text-orange-700 drop-shadow-sm">
               {score} <span className="text-3xl text-orange-500">/ {total}</span>
@@ -35,13 +35,16 @@ export default function GameThanks() {
           <div className="text-left bg-blue-50/80 border border-blue-100 rounded-2xl p-6 mb-8 shadow-inner">
             <div className="flex items-center gap-2 text-blue-800 font-bold mb-3">
               <Sparkles className="w-5 h-5" />
-              Gemini phân tích nhanh bài làm của bạn
+              Phân tích nhanh
             </div>
             <p className="text-slate-700 font-medium leading-relaxed mb-4">{analysis.summary}</p>
             {analysis.keywords?.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-4">
                 {analysis.keywords.map((keyword: string) => (
-                  <span key={keyword} className="px-3 py-1 rounded-full bg-white text-blue-700 text-sm font-semibold border border-blue-200">
+                  <span
+                    key={keyword}
+                    className="px-3 py-1 rounded-full bg-white text-blue-700 text-sm font-semibold border border-blue-200"
+                  >
                     {keyword}
                   </span>
                 ))}
@@ -51,7 +54,7 @@ export default function GameThanks() {
               <div className="space-y-2">
                 {analysis.recommendations.map((recommendation: string) => (
                   <div key={recommendation} className="text-sm text-slate-700 font-medium">
-                    • {recommendation}
+                    - {recommendation}
                   </div>
                 ))}
               </div>

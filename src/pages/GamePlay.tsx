@@ -56,14 +56,16 @@ export default function GamePlay() {
         );
 
         if (status === 'completed' && unansweredRequired) {
-          alert('Vui lòng trả lời đầy đủ các câu hỏi bắt buộc trước khi nộp bài.');
+          alert('Vui lòng hoàn thành các câu hỏi bắt buộc trước khi nộp.');
           setIsSubmitting(false);
           return;
         }
 
         const finalScore = hasScoring ? score : null;
         const totalScorable = hasScoring
-          ? questions.filter((question) => question.question_type === 'multiple_choice' && question.correct_answer).length
+          ? questions.filter(
+              (question) => question.question_type === 'multiple_choice' && question.correct_answer
+            ).length
           : null;
 
         if (hasScoring) {
@@ -145,7 +147,11 @@ export default function GamePlay() {
   }, [timeLeft, isSubmitting, submitGame]);
 
   if (!game || timeLeft === null) {
-    return <div className="min-h-[80vh] flex items-center justify-center text-blue-600 font-bold text-xl">Đang tải game...</div>;
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center text-blue-600 font-bold text-xl">
+        Đang tải game...
+      </div>
+    );
   }
 
   const formatTime = (seconds: number) => {
@@ -161,11 +167,12 @@ export default function GamePlay() {
       <div className="card-3d p-6 mb-8 sticky top-4 z-10 flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-800 drop-shadow-sm">{game.title}</h1>
-          <p className="text-slate-500 text-sm mt-1 font-medium">Hoàn thành toàn bộ câu hỏi trước khi hết giờ.</p>
         </div>
         <div
           className={`flex items-center px-6 py-3 rounded-2xl font-extrabold text-2xl shadow-inner border ${
-            timeLeft <= 30 ? 'bg-red-50 text-red-600 border-red-200 animate-pulse' : 'bg-orange-50 text-orange-600 border-orange-200'
+            timeLeft <= 30
+              ? 'bg-red-50 text-red-600 border-red-200 animate-pulse'
+              : 'bg-orange-50 text-orange-600 border-orange-200'
           }`}
         >
           <Clock className="w-6 h-6 mr-3" />
@@ -194,17 +201,28 @@ export default function GamePlay() {
             {question.question_type === 'ranking' && question.options ? (
               <div className="space-y-3">
                 {(() => {
-                  const currentRanking: string[] = answers[question.id] ? JSON.parse(answers[question.id]) : question.options;
+                  const currentRanking: string[] = answers[question.id]
+                    ? JSON.parse(answers[question.id])
+                    : question.options;
                   return currentRanking.map((item, itemIndex) => (
-                    <div key={item} className="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl shadow-sm transition-all hover:border-blue-300 hover:shadow-md">
+                    <div
+                      key={item}
+                      className="flex items-center gap-4 p-4 bg-white border border-slate-200 rounded-xl shadow-sm transition-all hover:border-blue-300 hover:shadow-md"
+                    >
                       <div className="flex flex-col gap-1">
                         <button
                           type="button"
                           onClick={() => {
                             if (itemIndex > 0) {
                               const next = [...currentRanking];
-                              [next[itemIndex - 1], next[itemIndex]] = [next[itemIndex], next[itemIndex - 1]];
-                              setAnswers((previous) => ({ ...previous, [question.id]: JSON.stringify(next) }));
+                              [next[itemIndex - 1], next[itemIndex]] = [
+                                next[itemIndex],
+                                next[itemIndex - 1],
+                              ];
+                              setAnswers((previous) => ({
+                                ...previous,
+                                [question.id]: JSON.stringify(next),
+                              }));
                             }
                           }}
                           disabled={itemIndex === 0}
@@ -217,8 +235,14 @@ export default function GamePlay() {
                           onClick={() => {
                             if (itemIndex < currentRanking.length - 1) {
                               const next = [...currentRanking];
-                              [next[itemIndex + 1], next[itemIndex]] = [next[itemIndex], next[itemIndex + 1]];
-                              setAnswers((previous) => ({ ...previous, [question.id]: JSON.stringify(next) }));
+                              [next[itemIndex + 1], next[itemIndex]] = [
+                                next[itemIndex],
+                                next[itemIndex + 1],
+                              ];
+                              setAnswers((previous) => ({
+                                ...previous,
+                                [question.id]: JSON.stringify(next),
+                              }));
                             }
                           }}
                           disabled={itemIndex === currentRanking.length - 1}
@@ -253,7 +277,9 @@ export default function GamePlay() {
                       }`}
                     >
                       <span>{option}</span>
-                      {isSelected && <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 ml-3" />}
+                      {isSelected && (
+                        <CheckCircle2 className="w-5 h-5 text-blue-600 flex-shrink-0 ml-3" />
+                      )}
                     </button>
                   );
                 })}
@@ -264,7 +290,7 @@ export default function GamePlay() {
                 value={answers[question.id] || ''}
                 onChange={(event) => setAnswers((previous) => ({ ...previous, [question.id]: event.target.value }))}
                 className="w-full p-4 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none font-medium text-slate-800 shadow-inner"
-                placeholder="Nhập câu trả lời của bạn..."
+                placeholder="Nhập câu trả lời"
               />
             ) : (
               <input
@@ -272,7 +298,7 @@ export default function GamePlay() {
                 value={answers[question.id] || ''}
                 onChange={(event) => setAnswers((previous) => ({ ...previous, [question.id]: event.target.value }))}
                 className="w-full p-4 bg-slate-50/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium text-slate-800 shadow-inner"
-                placeholder="Nhập câu trả lời..."
+                placeholder="Nhập câu trả lời"
               />
             )}
           </div>
@@ -280,8 +306,12 @@ export default function GamePlay() {
       </div>
 
       <div className="flex justify-center pb-12">
-        <button onClick={() => submitGame('completed')} disabled={isSubmitting} className="btn-3d-orange px-12 py-4 text-xl w-full md:w-auto">
-          {isSubmitting ? 'Đang nộp bài...' : 'Hoàn thành'}
+        <button
+          onClick={() => submitGame('completed')}
+          disabled={isSubmitting}
+          className="btn-3d-orange px-12 py-4 text-xl w-full md:w-auto"
+        >
+          {isSubmitting ? 'Đang nộp...' : 'Hoàn thành'}
           {!isSubmitting && <Send className="ml-3 w-6 h-6" />}
         </button>
       </div>
