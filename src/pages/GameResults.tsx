@@ -25,6 +25,7 @@ export default function GameResults() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [game, setGame] = useState<any>(null);
+  const [questions, setQuestions] = useState<any[]>([]);
   const [submissions, setSubmissions] = useState<any[]>([]);
   const [analysis, setAnalysis] = useState<any>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
@@ -38,6 +39,8 @@ export default function GameResults() {
       try {
         const gameData = await gamesService.getGameBySlug(slug);
         setGame(gameData);
+        const questionData = await gamesService.getGameQuestions(gameData.id);
+        setQuestions(questionData);
 
         const submissionsData = await submissionsService.getGameSubmissions(gameData.id);
         setSubmissions(submissionsData);
@@ -72,6 +75,14 @@ export default function GameResults() {
 
     return Array.from(questionMap.values());
   }, [submissions]);
+
+  const questionMeta = useMemo(() => {
+    const meta = new Map<string, any>();
+    questions.forEach((question) => {
+      meta.set(question.id, question);
+    });
+    return meta;
+  }, [questions]);
 
   const handleRunAnalysis = async () => {
     if (!game || submissions.length === 0) return;
@@ -276,6 +287,11 @@ export default function GameResults() {
                 {(submission.game_answers || []).map((answer: any, index: number) => {
                   const displayAnswer = formatAnswerText(answer.answer_text);
                   const isCorrect = answer.is_correct;
+                  const question = questionMeta.get(answer.question_id);
+                  const correctAnswer = question?.correct_answer
+                    ? normalizeVietnameseCopy(question.correct_answer)
+                    : null;
+                  const answerExplanation = question?.answer_explanation || null;
 
                   return (
                     <div
@@ -313,6 +329,20 @@ export default function GameResults() {
                           <XCircle className="w-6 h-6 text-red-500 ml-4 flex-shrink-0" />
                         )}
                       </div>
+                      {correctAnswer && (
+                        <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50/70 px-4 py-3">
+                          <div className="text-sm font-bold text-blue-800">Đáp án đúng</div>
+                          <div className="mt-1 text-sm font-medium text-slate-700">{correctAnswer}</div>
+                          {answerExplanation && (
+                            <div className="mt-3 border-t border-blue-100 pt-3">
+                              <div className="text-sm font-bold text-blue-800">Giải thích</div>
+                              <div className="mt-1 text-sm font-medium leading-relaxed text-slate-700">
+                                {answerExplanation}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}

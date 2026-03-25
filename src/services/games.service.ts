@@ -5,6 +5,9 @@ import { slugify } from '../lib/utils';
 
 type Game = Database['public']['Tables']['games']['Row'];
 type Question = Database['public']['Tables']['game_questions']['Row'];
+type GameQuestion = Question & {
+  answer_explanation?: string | null;
+};
 
 export type GameQuestionDraft = {
   question_text: string;
@@ -61,7 +64,7 @@ const CANONICAL_GAME_COPY: Record<
   },
 };
 
-const CANONICAL_QUESTIONS_BY_SLUG: Record<string, Question[]> = {
+const CANONICAL_QUESTIONS_BY_SLUG: Record<string, GameQuestion[]> = {
   'gamification-01': [
     {
       id: 'q1',
@@ -260,13 +263,169 @@ const CANONICAL_QUESTIONS_BY_SLUG: Record<string, Question[]> = {
   ],
 };
 
+const GAMIFICATION_02_REFINED_QUESTIONS: GameQuestion[] = [
+  {
+    id: 'g2q1',
+    game_id: '22222222-2222-2222-2222-222222222222',
+    question_order: 1,
+    question_text:
+      'Trong giờ cao điểm, nhân sự mới vừa gây ra 1 lỗi nhỏ (đã xử lý xong). Nếu tiếp tục giao việc có thể tăng rủi ro, nhưng thiếu người thì tốc độ sẽ giảm. CHT nên làm gì?',
+    question_type: 'multiple_choice',
+    options: [
+      'A. Rút nhân sự mới ra khỏi line chính để tránh rủi ro',
+      'B. Tiếp tục giao việc nhưng giảm độ khó và theo sát trực tiếp',
+      'C. Giữ nguyên phân công để không làm gián đoạn vận hành',
+      'D. Chuyển nhân sự sang quan sát để học thêm',
+    ],
+    correct_answer: 'B. Tiếp tục giao việc nhưng giảm độ khó và theo sát trực tiếp',
+    answer_explanation:
+      'Vì không nên “loại khỏi trận” làm giảm tốc độ, nhưng cũng không thể thả nổi. Cách đúng là giảm rủi ro mà vẫn giữ được nhịp vận hành.',
+    is_required: true,
+    created_at: now(),
+  },
+  {
+    id: 'g2q2',
+    game_id: '22222222-2222-2222-2222-222222222222',
+    question_order: 2,
+    question_text:
+      'Một nhân sự giỏi vừa bỏ qua quy trình, nhưng chính họ đang là người xử lý nhanh nhất giúp giảm ùn tắc. CHT nên xử lý thế nào ngay lúc đó?',
+    question_type: 'multiple_choice',
+    options: [
+      'A. Dừng ngay để yêu cầu làm đúng quy trình',
+      'B. Cho phép linh hoạt tạm thời, xử lý sau ca',
+      'C. Nhắc nhanh tại chỗ nhưng không gián đoạn công việc',
+      'D. Bỏ qua hoàn toàn vì đang cần tốc độ',
+    ],
+    correct_answer: 'C. Nhắc nhanh tại chỗ nhưng không gián đoạn công việc',
+    answer_explanation:
+      'Vì cần giữ flow vận hành nhưng không buông chuẩn. Nhắc ngay để hiệu chỉnh hành vi, nhưng tránh tạo ra một cú phanh gấp giữa ca.',
+    is_required: true,
+    created_at: now(),
+  },
+  {
+    id: 'g2q3',
+    game_id: '22222222-2222-2222-2222-222222222222',
+    question_order: 3,
+    question_text:
+      'Team vừa trải qua ca trước rất căng, nhiều lỗi nhỏ nhưng chưa kịp tổng kết. CHT nên tổ chức họp giao ca thế nào?',
+    question_type: 'multiple_choice',
+    options: [
+      'A. Đi sâu phân tích lỗi để tránh lặp lại',
+      'B. Bỏ họp để team nghỉ',
+      'C. Chốt nhanh mục tiêu + cảnh báo rủi ro chính, để phân tích sau',
+      'D. Nhắc chung chung để tiết kiệm thời gian',
+    ],
+    correct_answer: 'C. Chốt nhanh mục tiêu + cảnh báo rủi ro chính, để phân tích sau',
+    answer_explanation:
+      'Vì ở thời điểm này điều quan trọng là điều hướng đội ngũ và giữ nhịp ca mới, không phải mổ xẻ chi tiết ngay lập tức.',
+    is_required: true,
+    created_at: now(),
+  },
+  {
+    id: 'g2q4',
+    game_id: '22222222-2222-2222-2222-222222222222',
+    question_order: 4,
+    question_text:
+      'Sai lệch số liệu mỗi ngày rất nhỏ, nhưng đã lặp lại 4 ngày liên tiếp. CHT nên ưu tiên gì?',
+    question_type: 'multiple_choice',
+    options: [
+      'A. Chưa xử lý vì giá trị nhỏ',
+      'B. Xử lý ngay từng ngày riêng lẻ',
+      'C. Dừng lại tìm pattern và nguyên nhân hệ thống',
+      'D. Giao cho từng ca tự giải trình',
+    ],
+    correct_answer: 'C. Dừng lại tìm pattern và nguyên nhân hệ thống',
+    answer_explanation:
+      'Vì đây không còn là lỗi đơn lẻ nữa. Khi sai lệch lặp lại nhiều ngày, cần nhìn nó như một tín hiệu của lỗi hệ thống.',
+    is_required: true,
+    created_at: now(),
+  },
+  {
+    id: 'g2q5',
+    game_id: '22222222-2222-2222-2222-222222222222',
+    question_order: 5,
+    question_text:
+      'Đã kiểm tra nhiều lần nhưng vẫn không tìm ra nguyên nhân lệch tồn. CHT nên làm gì tiếp theo?',
+    question_type: 'multiple_choice',
+    options: [
+      'A. Kiểm lại toàn bộ từ đầu',
+      'B. Gán trách nhiệm cho người quản kho',
+      'C. Thiết lập checkpoint kiểm soát mới trong quy trình',
+      'D. Chờ phát sinh thêm để dễ tìm lỗi',
+    ],
+    correct_answer: 'C. Thiết lập checkpoint kiểm soát mới trong quy trình',
+    answer_explanation:
+      'Vì khi chưa thấy lỗi, việc cần làm không phải đoán tiếp mà là tạo cơ chế kiểm soát để lỗi buộc phải lộ ra.',
+    is_required: true,
+    created_at: now(),
+  },
+  {
+    id: 'g2q6',
+    game_id: '22222222-2222-2222-2222-222222222222',
+    question_order: 6,
+    question_text:
+      'Khách hiểu sai chính sách và phản ứng mạnh, nếu giải thích ngay dễ leo thang. CHT nên làm gì trước?',
+    question_type: 'multiple_choice',
+    options: [
+      'A. Giải thích đúng - sai ngay',
+      'B. Xin lỗi về trải nghiệm trước khi nói đúng - sai',
+      'C. Gọi quản lý cấp cao',
+      'D. Tránh tranh luận và cho qua',
+    ],
+    correct_answer: 'B. Xin lỗi về trải nghiệm trước khi nói đúng - sai',
+    answer_explanation:
+      'Vì trong thời điểm căng thẳng, cảm xúc luôn đi trước lý lẽ. Hạ nhiệt cảm xúc trước sẽ tạo điều kiện để khách lắng nghe phần chính sách sau đó.',
+    is_required: true,
+    created_at: now(),
+  },
+  {
+    id: 'g2q7',
+    game_id: '22222222-2222-2222-2222-222222222222',
+    question_order: 7,
+    question_text:
+      'Nhân sự giỏi bắt đầu tự rút gọn quy trình để làm nhanh hơn, chưa gây lỗi nhưng tiềm ẩn rủi ro. CHT nên làm gì?',
+    question_type: 'multiple_choice',
+    options: [
+      'A. Chờ có lỗi rồi xử lý',
+      'B. Cấm ngay lập tức',
+      'C. Trao đổi để chuẩn hóa lại cách làm nhanh nhưng vẫn đúng',
+      'D. Cho phép vì hiệu suất đang cao',
+    ],
+    correct_answer: 'C. Trao đổi để chuẩn hóa lại cách làm nhanh nhưng vẫn đúng',
+    answer_explanation:
+      'Vì không nên dập tắt sự chủ động, nhưng cũng không để một thói quen nhanh mà sai biến thành chuẩn ngầm. Cần chuẩn hóa nó thành cách làm đúng.',
+    is_required: true,
+    created_at: now(),
+  },
+  {
+    id: 'g2q8',
+    game_id: '22222222-2222-2222-2222-222222222222',
+    question_order: 8,
+    question_text:
+      'Khu thanh toán nghẽn nhưng chỉ xảy ra trong 15 phút cao điểm, sau đó tự hết. CHT nên đánh giá thế nào?',
+    question_type: 'multiple_choice',
+    options: [
+      'A. Không cần xử lý vì đã hết',
+      'B. Tăng nhân sự cố định cho khu này',
+      'C. Xem lại phân bổ theo khung giờ cao điểm',
+      'D. Đánh giá nhân sự yếu',
+    ],
+    correct_answer: 'C. Xem lại phân bổ theo khung giờ cao điểm',
+    answer_explanation:
+      'Vì đây là bài toán phân bổ nguồn lực theo thời điểm, không phải lỗi cá nhân hay lý do để tăng người cố định cho cả ngày.',
+    is_required: true,
+    created_at: now(),
+  },
+];
+
 function normalizeGameCopy(game: Game): Game {
   const canonical = CANONICAL_GAME_COPY[game.slug];
   return canonical ? { ...game, ...canonical } : game;
 }
 
 function normalizeQuestionsForGame(slug: string, questions: Question[]): Question[] {
-  const canonicalQuestions = CANONICAL_QUESTIONS_BY_SLUG[slug];
+  const canonicalQuestions =
+    slug === 'gamification-02' ? GAMIFICATION_02_REFINED_QUESTIONS : CANONICAL_QUESTIONS_BY_SLUG[slug];
   if (!canonicalQuestions) return questions;
 
   const canonicalByOrder = new Map(
@@ -281,6 +440,7 @@ function normalizeQuestionsForGame(slug: string, questions: Question[]): Questio
           question_text: canonical.question_text,
           options: canonical.options,
           correct_answer: canonical.correct_answer,
+          answer_explanation: canonical.answer_explanation ?? null,
           question_type: canonical.question_type,
           is_required: canonical.is_required,
         }
