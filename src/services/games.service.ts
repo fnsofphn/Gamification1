@@ -31,6 +31,41 @@ const DEMO_QUESTIONS_KEY = 'demo_custom_questions';
 const now = () => new Date().toISOString();
 const canUseStorage = typeof window !== 'undefined';
 
+const CANONICAL_GAME_COPY: Record<
+  string,
+  Pick<Game, 'title' | 'short_description' | 'instructions' | 'duration_seconds'>
+> = {
+  'gamification-01': {
+    title: 'Gamification 01 - Tương tác lấy ý kiến',
+    short_description:
+      'Hoạt động giúp học viên chia sẻ cảm nhận về thay đổi tại cửa hàng, điểm yếu trải nghiệm khách hàng và hành động cần làm ngay sau khóa học.',
+    instructions:
+      '• Đọc kỹ 3 câu hỏi trước khi trả lời\n• Bạn có 180 giây để hoàn thành\n• Hệ thống sẽ tự động nộp bài khi hết giờ',
+    duration_seconds: 180,
+  },
+  'gamification-02': {
+    title: 'Gamification 02 - Bản đồ hành động của CHT trong giai đoạn mới',
+    short_description:
+      'Quiz tương tác về các hành vi quản lý đúng/sai trong giao việc, kiểm tra, họp, báo cáo, xử lý sai lệch và ra quyết định tại hiện trường.',
+    instructions:
+      '• Đọc kỹ từng tình huống\n• Chọn 1 đáp án đúng nhất\n• Hoàn thành trong 300 giây',
+    duration_seconds: 300,
+  },
+  'gamification-03': {
+    title: 'Gamification 03 - Điểm chạm nào quyết định niềm tin?',
+    short_description:
+      'Học viên xếp hạng các điểm chạm theo mức độ ảnh hưởng tới niềm tin khách hàng trên nền tảng web.',
+    instructions:
+      '• Sắp xếp các điểm chạm theo thứ tự quan trọng giảm dần\n• Dùng nút Lên/Xuống để đổi vị trí\n• Hoàn thành trong 180 giây',
+    duration_seconds: 180,
+  },
+};
+
+function normalizeGameCopy(game: Game): Game {
+  const canonical = CANONICAL_GAME_COPY[game.slug];
+  return canonical ? { ...game, ...canonical } : game;
+}
+
 const MOCK_GAME: Game = {
   id: '11111111-1111-1111-1111-111111111111',
   slug: 'gamification-01',
@@ -213,7 +248,7 @@ function saveDemoCustomQuestions(questionMap: Record<string, Question[]>) {
 
 export const gamesService = {
   async getActiveGames() {
-    if (isDemo) return [...getDemoCustomGames(), ...MOCK_GAMES];
+    if (isDemo) return [...getDemoCustomGames(), ...MOCK_GAMES].map(normalizeGameCopy);
 
     const { data, error } = await supabase
       .from('games')
@@ -222,20 +257,20 @@ export const gamesService = {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data as Game[];
+    return (data as Game[]).map(normalizeGameCopy);
   },
 
   async getGameBySlug(slug: string) {
     if (isDemo) {
       const game = [...getDemoCustomGames(), ...MOCK_GAMES].find((item) => item.slug === slug);
       if (!game) throw new Error('Game not found');
-      return game;
+      return normalizeGameCopy(game);
     }
 
     const { data, error } = await supabase.from('games').select('*').eq('slug', slug).single();
 
     if (error) throw error;
-    return data as Game;
+    return normalizeGameCopy(data as Game);
   },
 
   async getGameQuestions(gameId: string) {
