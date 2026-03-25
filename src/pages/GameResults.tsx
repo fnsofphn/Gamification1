@@ -14,7 +14,7 @@ import { gamesService } from '../services/games.service';
 import { submissionsService } from '../services/submissions.service';
 import { exportService } from '../services/export.service';
 import { analysisService } from '../services/analysis.service';
-import { formatAnswerText } from '../lib/utils';
+import { formatAnswerText, normalizeVietnameseCopy } from '../lib/utils';
 
 type QuestionSummary = {
   question: string;
@@ -60,7 +60,9 @@ export default function GameResults() {
 
     submissions.forEach((submission) => {
       (submission.game_answers || []).forEach((answer: any) => {
-        const question = answer.game_questions?.question_text || `Câu hỏi ${answer.question_id}`;
+        const question = normalizeVietnameseCopy(
+          answer.game_questions?.question_text || `Câu hỏi ${answer.question_id}`
+        );
         if (!questionMap.has(question)) {
           questionMap.set(question, { question, answers: [] });
         }
@@ -80,7 +82,9 @@ export default function GameResults() {
     try {
       const payload = submissions.flatMap((submission) =>
         (submission.game_answers || []).map((answer: any) => ({
-          question: answer.game_questions?.question_text || `Câu hỏi ${answer.question_id}`,
+          question: normalizeVietnameseCopy(
+            answer.game_questions?.question_text || `Câu hỏi ${answer.question_id}`
+          ),
           answer: `${submission.participants?.display_name || 'Ẩn danh'}: ${formatAnswerText(answer.answer_text)}`,
         }))
       );
@@ -286,7 +290,9 @@ export default function GameResults() {
                     >
                       <p className="text-sm font-bold text-blue-800 mb-3 flex items-start">
                         <span className="mr-2 mt-0.5 text-orange-500">Q:</span>
-                        {answer.game_questions?.question_text || `Câu hỏi ${answer.question_id}`}
+                        {normalizeVietnameseCopy(
+                          answer.game_questions?.question_text || `Câu hỏi ${answer.question_id}`
+                        )}
                       </p>
                       <div className="flex items-start">
                         <div
