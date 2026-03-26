@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -9,6 +9,7 @@ import {
   XCircle,
   Sparkles,
   BarChart3,
+  RotateCw,
 } from 'lucide-react';
 import { gamesService } from '../services/games.service';
 import { submissionsService } from '../services/submissions.service';
@@ -31,32 +32,31 @@ export default function GameResults() {
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [analysisLoading, setAnalysisLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const loadData = useCallback(async () => {
+    if (!slug) return;
+
+    try {
+      const gameData = await gamesService.getGameBySlug(slug);
+      setGame(gameData);
+      const questionData = await gamesService.getGameQuestions(gameData.id);
+      setQuestions(questionData);
+
+      const submissionsData = await submissionsService.getGameSubmissions(gameData.id);
+      setSubmissions(submissionsData);
+
+      const latestAnalysis = await analysisService.getLatestGameSummary(gameData.id);
+      setAnalysis(latestAnalysis);
+    } catch (error) {
+      console.error('Failed to load results:', error);
+      navigate('/games');
+    }
+  }, [slug, navigate]);
 
   useEffect(() => {
-    async function loadData() {
-      if (!slug) return;
-
-      try {
-        const gameData = await gamesService.getGameBySlug(slug);
-        setGame(gameData);
-        const questionData = await gamesService.getGameQuestions(gameData.id);
-        setQuestions(questionData);
-
-        const submissionsData = await submissionsService.getGameSubmissions(gameData.id);
-        setSubmissions(submissionsData);
-
-        const latestAnalysis = await analysisService.getLatestGameSummary(gameData.id);
-        setAnalysis(latestAnalysis);
-      } catch (error) {
-        console.error('Failed to load results:', error);
-        navigate('/games');
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadData();
-  }, [slug, navigate]);
+    void loadData().finally(() => setLoading(false));
+  }, [loadData]);
 
   const groupedByQuestion = useMemo(() => {
     const questionMap = new Map<string, QuestionSummary>();
@@ -112,6 +112,12 @@ export default function GameResults() {
     }
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  };
+
   if (loading) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center text-blue-600 font-bold text-xl">
@@ -140,6 +146,14 @@ export default function GameResults() {
         </div>
 
         <div className="flex flex-wrap gap-4">
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="btn-3d-blue px-6 py-3.5 text-base disabled:opacity-60"
+          >
+            <RotateCw className={`w-5 h-5 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+            {refreshing ? 'Đang làm mới...' : 'Làm mới'}
+          </button>
           <button
             onClick={handleRunAnalysis}
             disabled={analysisLoading || submissions.length === 0}

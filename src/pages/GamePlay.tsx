@@ -13,6 +13,7 @@ export default function GamePlay() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStage, setSubmitStage] = useState<'saving' | 'analyzing' | null>(null);
 
   const sessionId = sessionStorage.getItem('current_session_id');
   const currentGameId = sessionStorage.getItem('current_game_id');
@@ -22,6 +23,7 @@ export default function GamePlay() {
       if (!sessionId || !game || isSubmitting) return;
 
       setIsSubmitting(true);
+      setSubmitStage('saving');
 
       try {
         let score = 0;
@@ -58,6 +60,7 @@ export default function GamePlay() {
         if (status === 'completed' && unansweredRequired) {
           alert('Vui lòng hoàn thành các câu hỏi bắt buộc trước khi nộp.');
           setIsSubmitting(false);
+          setSubmitStage(null);
           return;
         }
 
@@ -77,6 +80,7 @@ export default function GamePlay() {
         }
 
         await submissionsService.submitAnswers(sessionId, formattedAnswers, status, finalScore);
+        setSubmitStage('analyzing');
 
         const analysis = await analysisService.analyzeSubmission(
           currentGameId || game.id,
@@ -98,6 +102,7 @@ export default function GamePlay() {
         console.error('Submit error:', error);
         alert('Có lỗi khi nộp bài.');
         setIsSubmitting(false);
+        setSubmitStage(null);
       }
     },
     [answers, currentGameId, game, isSubmitting, navigate, questions, sessionId, slug]
@@ -164,6 +169,20 @@ export default function GamePlay() {
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8 animate-fade-in-up">
+      {isSubmitting && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/35 px-4 backdrop-blur-sm">
+          <div className="card-3d w-full max-w-lg p-8 text-center">
+            <div className="mx-auto mb-5 h-14 w-14 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
+            <h2 className="text-2xl font-extrabold text-slate-800">
+              {submitStage === 'analyzing' ? 'Đang phân tích kết quả của bạn' : 'Đang ghi nhận bài làm của bạn'}
+            </h2>
+            <p className="mt-3 text-base font-medium leading-relaxed text-slate-600">
+              Vui lòng chờ trong giây lát, hệ thống đang xử lý để hiển thị kết quả tốt nhất cho bạn.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="card-3d p-6 mb-8 sticky top-4 z-10 flex flex-col md:flex-row items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-800 drop-shadow-sm">{game.title}</h1>
@@ -311,7 +330,7 @@ export default function GamePlay() {
           disabled={isSubmitting}
           className="btn-3d-orange px-12 py-4 text-xl w-full md:w-auto"
         >
-          {isSubmitting ? 'Đang nộp...' : 'Hoàn thành'}
+          {isSubmitting ? 'Đang xử lý...' : 'Hoàn thành'}
           {!isSubmitting && <Send className="ml-3 w-6 h-6" />}
         </button>
       </div>

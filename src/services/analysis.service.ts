@@ -20,14 +20,22 @@ function cleanJsonText(text: string) {
   return text.replace(/```json/gi, '').replace(/```/g, '').trim();
 }
 
+function softenAnalysisLanguage(text: string) {
+  return text
+    .replace(/\bcủa học viên\b/gi, 'của bạn')
+    .replace(/\bhọc viên đã\b/gi, 'bạn đã')
+    .replace(/\bngười học\b/gi, 'bạn')
+    .replace(/\bhọc viên\b/gi, 'bạn');
+}
+
 function parseJsonResponse(text: string): AnalysisResult {
   const parsed = JSON.parse(cleanJsonText(text));
 
   return {
-    summary: typeof parsed.summary === 'string' ? parsed.summary : '',
+    summary: softenAnalysisLanguage(typeof parsed.summary === 'string' ? parsed.summary : ''),
     keywords: Array.isArray(parsed.keywords) ? parsed.keywords.map(String) : [],
     recommendations: Array.isArray(parsed.recommendations)
-      ? parsed.recommendations.map(String)
+      ? parsed.recommendations.map((item) => softenAnalysisLanguage(String(item)))
       : [],
     raw_json: parsed,
   };
@@ -120,7 +128,7 @@ export const analysisService = {
 
     const prompt = `
 Bạn là trợ lý phân tích phản hồi đào tạo bằng tiếng Việt.
-Hãy đọc câu trả lời của 1 học viên và trả về JSON hợp lệ theo cấu trúc:
+Hãy đọc câu trả lời của 1 người chơi và trả về JSON hợp lệ theo cấu trúc:
 {
   "summary": "Tóm tắt ngắn gọn trong 2-3 câu",
   "keywords": ["chủ đề 1", "chủ đề 2", "chủ đề 3"],
@@ -129,7 +137,8 @@ Hãy đọc câu trả lời của 1 học viên và trả về JSON hợp lệ 
 
 Yêu cầu:
 - Viết tiếng Việt rõ ràng, súc tích.
-- Bám sát nội dung học viên nhập.
+- Dùng đại từ "bạn" thay cho "học viên" hoặc "người học".
+- Bám sát nội dung người chơi nhập.
 - Không thêm markdown, không thêm giải thích ngoài JSON.
 
 Dữ liệu đầu vào:
@@ -168,6 +177,7 @@ Hãy phân tích toàn bộ ý kiến và trả về JSON hợp lệ theo cấu 
 
 Yêu cầu:
 - Viết bằng tiếng Việt.
+- Dùng đại từ "bạn" nếu cần nhắc đến người trả lời.
 - Nhóm ý kiến tương đồng thành các chủ đề rõ ràng.
 - Chỉ trả về JSON, không markdown.
 

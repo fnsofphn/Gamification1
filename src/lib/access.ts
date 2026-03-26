@@ -3,6 +3,8 @@ export type ViewerRole = 'manager' | 'learner';
 export type ViewerAccess = {
   email: string;
   role: ViewerRole;
+  displayName: string;
+  unitName: string;
 };
 
 const ACCESS_KEY = 'vinabrain_viewer_access';
@@ -31,12 +33,18 @@ export function getViewerAccess(): ViewerAccess | null {
   }
 }
 
-export function setViewerAccess(email: string) {
+export function setViewerAccess(params: {
+  email: string;
+  displayName: string;
+  unitName?: string;
+}) {
   if (typeof window === 'undefined') return null;
 
   const access = {
-    email: normalizeEmail(email),
-    role: resolveViewerRole(email),
+    email: normalizeEmail(params.email),
+    role: resolveViewerRole(params.email),
+    displayName: params.displayName.trim(),
+    unitName: params.unitName?.trim() || '',
   } satisfies ViewerAccess;
 
   window.sessionStorage.setItem(ACCESS_KEY, JSON.stringify(access));
@@ -51,4 +59,3 @@ export function clearViewerAccess() {
 export function getDefaultRoute(access: ViewerAccess | null) {
   return access?.role === 'manager' ? '/dashboard' : '/games';
 }
-

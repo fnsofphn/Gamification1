@@ -1,9 +1,10 @@
-import { useState, useEffect, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, User, Building2, PlayCircle } from 'lucide-react';
 import { gamesService } from '../services/games.service';
 import { participantsService } from '../services/participants.service';
 import { submissionsService } from '../services/submissions.service';
+import { getViewerAccess } from '../lib/access';
 
 export default function GameJoin() {
   const { slug } = useParams<{ slug: string }>();
@@ -12,24 +13,42 @@ export default function GameJoin() {
   const [displayName, setDisplayName] = useState('');
   const [unitName, setUnitName] = useState('');
   const [loading, setLoading] = useState(false);
+  const access = getViewerAccess();
+  const isManager = access?.role === 'manager';
 
   useEffect(() => {
     if (!slug) return;
 
-    gamesService.getGameBySlug(slug).then(setGame).catch(() => navigate('/games'));
+    gamesService
+      .getGameBySlug(slug)
+      .then((loadedGame) => {
+        setGame(loadedGame);
+
+        if (access?.displayName) {
+          setDisplayName(access.displayName);
+          setUnitName(access.unitName || '');
+        }
+      })
+      .catch(() => navigate('/games'));
+
     sessionStorage.removeItem('last_score');
     sessionStorage.removeItem('last_total');
     sessionStorage.removeItem('last_analysis');
-  }, [slug, navigate]);
+  }, [slug, navigate, access]);
 
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!displayName.trim() || !game) return;
+  useEffect(() => {
+    if (!game || isManager || !access?.displayName || loading) return;
+
+    void startGameSession(access.displayName, access.unitName || '');
+  }, [game, isManager, access, loading]);
+
+  async function startGameSession(name: string, unit: string) {
+    if (!game) return;
 
     setLoading(true);
 
     try {
-      const participant: any = await participantsService.createParticipant(displayName.trim(), unitName.trim());
+      const participant: any = await participantsService.createParticipant(name.trim(), unit.trim());
       const session: any = await submissionsService.createSession(game.id, participant.id, game.duration_seconds);
 
       sessionStorage.setItem('current_session_id', session.id);
@@ -42,9 +61,28 @@ export default function GameJoin() {
       alert('Có lỗi xảy ra. Vui lòng thử lại.');
       setLoading(false);
     }
+  }
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!displayName.trim() || !game) return;
+    await startGameSession(displayName, unitName);
   };
 
   if (!game) return null;
+
+  if (!isManager && access?.displayName) {
+    return (
+      <div className="max-w-xl mx-auto p-4 md:p-8 animate-fade-in-up">
+        <div className="card-3d p-8 md:p-10 text-center">
+          <h1 className="text-3xl font-extrabold text-slate-800 mb-4 drop-shadow-sm">Chuẩn bị vào game</h1>
+          <p className="text-slate-600 font-medium leading-relaxed">
+            Đang dùng thông tin của bạn để bắt đầu trò chơi.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-xl mx-auto p-4 md:p-8 animate-fade-in-up">
