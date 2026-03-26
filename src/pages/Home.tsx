@@ -11,6 +11,8 @@ export default function Home() {
   const [unitName, setUnitName] = useState('');
   const [error, setError] = useState('');
 
+  const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+
   useEffect(() => {
     const access = getViewerAccess();
     if (access) {
@@ -21,13 +23,13 @@ export default function Home() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!email.trim()) {
-      setError('Vui lòng nhập email để tiếp tục.');
+    if (!email.trim() || !isValidEmail(email)) {
+      setError('Vui lòng nhập đúng định dạng email.');
       return;
     }
 
     if (!displayName.trim()) {
-      setError('Vui lòng nhập họ và tên.');
+      setError('Vui lòng nhập họ tên.');
       return;
     }
 
@@ -48,7 +50,7 @@ export default function Home() {
             Vinabrain Gamification
           </h1>
           <p className="mt-4 text-lg text-slate-600 leading-relaxed font-medium">
-            Nhập thông tin để vào đúng giao diện sử dụng.
+            Xin chào! Mời bạn nhập thông tin để tham gia tương tác!
           </p>
         </div>
 
@@ -120,10 +122,6 @@ export default function Home() {
             <ArrowRight className="ml-2 h-5 w-5" />
           </button>
         </form>
-
-        <div className="mt-6 rounded-2xl bg-slate-50/80 px-5 py-4 text-sm font-medium leading-relaxed text-slate-600">
-          Email <strong>daotao@peopleone.com.vn</strong> sẽ vào giao diện quản lý. Các email khác sẽ vào giao diện học viên.
-        </div>
       </div>
     </div>
   );
