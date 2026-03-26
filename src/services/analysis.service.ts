@@ -216,4 +216,11 @@ ${answers.map((item, index) => `${index + 1}. ${item.question}\nÝ kiến: ${ite
     if (error) throw error;
     return data;
   },
+
+  async clearGameAnalyses(gameId: string) {
+    if (isDemo) return;
+
+    const { error } = await supabase.from('game_ai_analyses').delete().eq('game_id', gameId);
+    if (error) throw error;
+  },
 };

@@ -5,6 +5,7 @@ import { getDefaultRoute, getViewerAccess } from '../lib/access';
 export default function GameThanks() {
   const score = sessionStorage.getItem('last_score');
   const total = sessionStorage.getItem('last_total');
+  const hasScoring = sessionStorage.getItem('last_has_scoring') === 'true';
   const analysisRaw = sessionStorage.getItem('last_analysis');
   const analysis = analysisRaw ? JSON.parse(analysisRaw) : null;
   const nextPath = getDefaultRoute(getViewerAccess());
@@ -53,7 +54,7 @@ export default function GameThanks() {
                 ))}
               </div>
             )}
-            {analysis.recommendations?.length > 0 && (
+            {hasScoring && analysis.recommendations?.length > 0 && (
               <div className="space-y-2">
                 {analysis.recommendations.map((recommendation: string) => (
                   <div key={recommendation} className="text-sm text-slate-700 font-medium">

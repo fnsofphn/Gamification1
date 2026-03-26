@@ -33,6 +33,7 @@ export default function GameResults() {
   const [loading, setLoading] = useState(true);
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   const loadData = useCallback(async () => {
     if (!slug) return;
@@ -118,6 +119,32 @@ export default function GameResults() {
     setRefreshing(false);
   };
 
+  const handleClearResults = async () => {
+    if (!game) return;
+
+    const confirmed = window.confirm(
+      'Bạn có chắc muốn xóa toàn bộ kết quả và phân tích AI của game này không? Thao tác này dùng để bắt đầu lượt chơi mới cho lớp tiếp theo.'
+    );
+
+    if (!confirmed) return;
+
+    setClearing(true);
+
+    try {
+      await submissionsService.clearGameResults(game.id);
+      await analysisService.clearGameAnalyses(game.id);
+      setSubmissions([]);
+      setAnalysis(null);
+      setAnalysisError(null);
+      await loadData();
+    } catch (error) {
+      console.error(error);
+      alert('Không thể làm mới kết quả của game này.');
+    } finally {
+      setClearing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center text-blue-600 font-bold text-xl">
@@ -155,19 +182,20 @@ export default function GameResults() {
             {refreshing ? 'Đang làm mới...' : 'Làm mới'}
           </button>
           <button
+            onClick={handleClearResults}
+            disabled={clearing}
+            className="btn-3d-orange px-6 py-3.5 text-base disabled:opacity-60"
+          >
+            <RotateCw className={`w-5 h-5 mr-2 ${clearing ? 'animate-spin' : ''}`} />
+            {clearing ? 'Đang xóa kết quả...' : 'Làm mới kết quả'}
+          </button>
+          <button
             onClick={handleRunAnalysis}
             disabled={analysisLoading || submissions.length === 0}
             className="btn-3d-blue px-6 py-3.5 text-base disabled:opacity-60"
           >
             <Sparkles className="w-5 h-5 mr-2" />
             {analysisLoading ? 'Đang phân tích...' : 'Phân tích AI'}
-          </button>
-          <button
-            onClick={() => exportService.exportSubmissionsToCSV(game.id, game.slug)}
-            className="btn-3d-blue px-6 py-3.5 text-base"
-          >
-            <Download className="w-5 h-5 mr-2" />
-            CSV
           </button>
           <button
             onClick={() => exportService.exportSubmissionsToExcel(game.id, game.slug)}

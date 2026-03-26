@@ -262,4 +262,18 @@ export const submissionsService = {
     if (error) throw error;
     return data;
   },
+
+  async clearGameResults(gameId: string) {
+    if (isDemo) {
+      if (!canUseStorage) return;
+
+      const sessions = JSON.parse(window.localStorage.getItem(DEMO_SESSIONS_KEY) || '[]');
+      const remainingSessions = sessions.filter((session: any) => session.game_id !== gameId);
+      window.localStorage.setItem(DEMO_SESSIONS_KEY, JSON.stringify(remainingSessions));
+      return;
+    }
+
+    const { error } = await supabase.from('game_sessions').delete().eq('game_id', gameId);
+    if (error) throw error;
+  },
 };

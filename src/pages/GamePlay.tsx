@@ -14,6 +14,7 @@ export default function GamePlay() {
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStage, setSubmitStage] = useState<'saving' | 'analyzing' | null>(null);
+  const [submitProgress, setSubmitProgress] = useState(0);
 
   const sessionId = sessionStorage.getItem('current_session_id');
   const currentGameId = sessionStorage.getItem('current_game_id');
@@ -78,6 +79,7 @@ export default function GamePlay() {
           sessionStorage.removeItem('last_score');
           sessionStorage.removeItem('last_total');
         }
+        sessionStorage.setItem('last_has_scoring', hasScoring ? 'true' : 'false');
 
         await submissionsService.submitAnswers(sessionId, formattedAnswers, status, finalScore);
         setSubmitStage('analyzing');
@@ -151,6 +153,32 @@ export default function GamePlay() {
     return () => clearInterval(timer);
   }, [timeLeft, isSubmitting, submitGame]);
 
+  useEffect(() => {
+    if (!isSubmitting) {
+      setSubmitProgress(0);
+      return;
+    }
+
+    const durationMs = 7000;
+    const start = performance.now();
+    let frameId = 0;
+
+    const tick = (timestamp: number) => {
+      const elapsed = timestamp - start;
+      const progress = Math.min(elapsed / durationMs, 1);
+      const eased = 0.5 - Math.cos(Math.PI * progress) / 2;
+      setSubmitProgress(Math.round(eased * 100));
+
+      if (progress < 1) {
+        frameId = window.requestAnimationFrame(tick);
+      }
+    };
+
+    frameId = window.requestAnimationFrame(tick);
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, [isSubmitting]);
+
   if (!game || timeLeft === null) {
     return (
       <div className="min-h-[80vh] flex items-center justify-center text-blue-600 font-bold text-xl">
@@ -171,14 +199,62 @@ export default function GamePlay() {
     <div className="max-w-4xl mx-auto p-4 md:p-8 animate-fade-in-up">
       {isSubmitting && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/35 px-4 backdrop-blur-sm">
-          <div className="card-3d w-full max-w-lg p-8 text-center">
-            <div className="mx-auto mb-5 h-14 w-14 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600" />
-            <h2 className="text-2xl font-extrabold text-slate-800">
-              {submitStage === 'analyzing' ? 'Đang phân tích kết quả của bạn' : 'Đang ghi nhận bài làm của bạn'}
-            </h2>
-            <p className="mt-3 text-base font-medium leading-relaxed text-slate-600">
-              Vui lòng chờ trong giây lát, hệ thống đang xử lý để hiển thị kết quả tốt nhất cho bạn.
-            </p>
+          <div className="card-3d w-full max-w-2xl overflow-hidden p-0">
+            <div className="h-2.5 w-full bg-slate-100">
+              <div
+                className="result-progress-bar h-full"
+                style={{ width: `${submitProgress}%` }}
+              />
+            </div>
+
+            <div className="p-8 md:p-10">
+              <div className="transition-all duration-500 ease-out">
+                <div className="text-sm font-bold uppercase tracking-[0.2em] text-blue-500">
+                  {submitStage === 'analyzing' ? 'Phân tích AI' : 'Đang xử lý'}
+                </div>
+                <h2 className="mt-3 text-2xl md:text-3xl font-extrabold text-slate-800 opacity-100 translate-y-0 transition-all duration-500 ease-out">
+                  {submitStage === 'analyzing' ? 'Đang phân tích kết quả của bạn' : 'Đang ghi nhận bài làm của bạn'}
+                </h2>
+                <p className="mt-3 text-base font-medium leading-relaxed text-slate-600 opacity-100 translate-y-0 transition-all duration-500 ease-out">
+                  Hệ thống đang tổng hợp dữ liệu để chuẩn bị hiển thị kết quả và gợi ý phù hợp cho bạn.
+                </p>
+              </div>
+
+              <div className="mt-8 grid gap-6 md:grid-cols-[0.85fr_1.15fr]">
+                <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-6">
+                  <div className="skeleton-shimmer mx-auto h-28 w-28 rounded-full" />
+                  <div className="mt-6 space-y-3">
+                    <div className="skeleton-shimmer h-4 rounded-full" />
+                    <div className="skeleton-shimmer h-4 w-4/5 rounded-full" />
+                    <div className="skeleton-shimmer h-4 w-2/3 rounded-full" />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-5">
+                    <div className="mb-4 text-sm font-bold uppercase tracking-[0.16em] text-slate-400">
+                      Nhận xét nổi bật
+                    </div>
+                    <div className="space-y-3">
+                      <div className="skeleton-shimmer h-4 rounded-full" />
+                      <div className="skeleton-shimmer h-4 w-11/12 rounded-full" />
+                      <div className="skeleton-shimmer h-4 w-4/5 rounded-full" />
+                    </div>
+                  </div>
+
+                  <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-5">
+                    <div className="mb-4 text-sm font-bold uppercase tracking-[0.16em] text-slate-400">
+                      Gợi ý tiếp theo
+                    </div>
+                    <div className="space-y-3">
+                      <div className="skeleton-shimmer h-4 rounded-full" />
+                      <div className="skeleton-shimmer h-4 w-10/12 rounded-full" />
+                      <div className="skeleton-shimmer h-4 w-3/4 rounded-full" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
