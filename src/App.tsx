@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
+import RequireAccess from './components/RequireAccess';
 import Home from './pages/Home';
 import Games from './pages/Games';
 import GameDetail from './pages/GameDetail';
@@ -24,13 +25,17 @@ export default function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/games" element={<Games />} />
-        <Route path="/games/:slug" element={<GameDetail />} />
-        <Route path="/games/:slug/join" element={<GameJoin />} />
-        <Route path="/games/:slug/play" element={<GamePlay />} />
-        <Route path="/games/:slug/thanks" element={<GameThanks />} />
-        <Route path="/games/:slug/results" element={<GameResults />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route element={<RequireAccess />}>
+          <Route path="/games" element={<Games />} />
+          <Route path="/games/:slug" element={<GameDetail />} />
+          <Route path="/games/:slug/join" element={<GameJoin />} />
+          <Route path="/games/:slug/play" element={<GamePlay />} />
+          <Route path="/games/:slug/thanks" element={<GameThanks />} />
+        </Route>
+        <Route element={<RequireAccess role="manager" />}>
+          <Route path="/games/:slug/results" element={<GameResults />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
       </Routes>
     </Router>
   );

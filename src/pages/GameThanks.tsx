@@ -1,11 +1,14 @@
 import { Link } from 'react-router-dom';
 import { CheckCircle, Home, Award, Sparkles } from 'lucide-react';
+import { getDefaultRoute, getViewerAccess } from '../lib/access';
 
 export default function GameThanks() {
   const score = sessionStorage.getItem('last_score');
   const total = sessionStorage.getItem('last_total');
   const analysisRaw = sessionStorage.getItem('last_analysis');
   const analysis = analysisRaw ? JSON.parse(analysisRaw) : null;
+  const nextPath = getDefaultRoute(getViewerAccess());
+  const nextLabel = nextPath === '/dashboard' ? 'Về quản lý' : 'Về thư viện';
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center p-4 animate-fade-in-up">
@@ -62,9 +65,9 @@ export default function GameThanks() {
           </div>
         )}
 
-        <Link to="/" className="btn-3d-blue w-full py-4 text-lg">
+        <Link to={nextPath} className="btn-3d-blue w-full py-4 text-lg">
           <Home className="mr-2 w-6 h-6" />
-          Về trang chủ
+          {nextLabel}
         </Link>
       </div>
     </div>

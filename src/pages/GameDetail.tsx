@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Clock, ArrowLeft, PlayCircle, BarChart2 } from 'lucide-react';
 import { gamesService } from '../services/games.service';
 import { Database } from '../types/database';
+import { getViewerAccess } from '../lib/access';
 
 type Game = Database['public']['Tables']['games']['Row'];
 
@@ -11,6 +12,7 @@ export default function GameDetail() {
   const navigate = useNavigate();
   const [game, setGame] = useState<Game | null>(null);
   const [loading, setLoading] = useState(true);
+  const isManager = getViewerAccess()?.role === 'manager';
 
   useEffect(() => {
     async function loadGame() {
@@ -72,10 +74,12 @@ export default function GameDetail() {
             <PlayCircle className="ml-2 w-6 h-6" />
           </Link>
 
-          <Link to={`/games/${game.slug}/results`} className="btn-3d-blue flex-1 py-4 text-lg">
-            Kết quả
-            <BarChart2 className="ml-2 w-6 h-6" />
-          </Link>
+          {isManager && (
+            <Link to={`/games/${game.slug}/results`} className="btn-3d-blue flex-1 py-4 text-lg">
+              Kết quả
+              <BarChart2 className="ml-2 w-6 h-6" />
+            </Link>
+          )}
         </div>
       </div>
     </div>
